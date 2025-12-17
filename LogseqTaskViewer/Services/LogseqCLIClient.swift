@@ -270,12 +270,39 @@ class LogseqCLIClient {
         
         for block in blocks {
             if var title = block.title {
-                // Replace each UUID reference with its resolved title
+                print("DEBUG: Original title before replacement: \(title)")
+                
+                // Find which UUIDs are actually present in this title and replace only those
                 for (uuid, resolvedTitle) in uuidToTitleMap {
-                    let pattern = "\\[\\[" + uuid + "\\]\\]"
-                    title = title.replacingOccurrences(of: pattern, with: "[[\(resolvedTitle)]]")
-                    print("DEBUG: Replaced \(uuid) with \(resolvedTitle)")
+                    // Use actual brackets, not escaped ones
+                    let pattern = "[[" + uuid + "]]"
+                    
+                    // Debug: Check if the UUID is in the title using different methods
+                    let containsPattern = title.contains(pattern)
+                    let rangeOfPattern = title.range(of: pattern)
+                    
+                    print("DEBUG: Checking UUID \(uuid) in title")
+                    print("DEBUG: Pattern: \(pattern)")
+                    print("DEBUG: contains(pattern): \(containsPattern)")
+                    print("DEBUG: range(of: pattern): \(rangeOfPattern != nil)")
+                    
+                    // Check if this UUID is actually in the current title
+                    if containsPattern {
+                        let oldTitle = title
+                        title = title.replacingOccurrences(of: pattern, with: "[[" + resolvedTitle + "]]")
+                        if title != oldTitle {
+                            print("DEBUG: Successfully replaced \(uuid) with \(resolvedTitle)")
+                            print("DEBUG: Title changed from: \(oldTitle)")
+                            print("DEBUG: Title changed to: \(title)")
+                        } else {
+                            print("DEBUG: WARNING: Replacement failed for \(uuid) -> \(resolvedTitle) even though pattern was found")
+                        }
+                    } else {
+                        print("DEBUG: Skipping \(uuid) -> \(resolvedTitle) (not found in this title)")
+                    }
                 }
+                
+                print("DEBUG: Final resolved title: \(title)")
                 
                 // Create a new block with the resolved title using JSON encoding/decoding
                 // This is necessary because LogseqBlock is a struct with let properties
@@ -283,23 +310,31 @@ class LogseqCLIClient {
                 let decoder = JSONDecoder()
                 
                 do {
+                    print("DEBUG: Starting JSON encoding/decoding process")
+                    
                     // Encode the original block
                     let encodedData = try encoder.encode(block)
+                    print("DEBUG: Successfully encoded block, data size: \(encodedData.count)")
                     
                     // Decode it back to a mutable dictionary
                     var jsonObject = try JSONSerialization.jsonObject(with: encodedData) as? [String: Any] ?? [:]
+                    print("DEBUG: Successfully decoded to dictionary: \(jsonObject)")
                     
                     // Update the title in the dictionary
                     jsonObject["block/title"] = title
+                    print("DEBUG: Updated title in dictionary to: \(title)")
                     
                     // Re-encode the modified dictionary
                     let modifiedData = try JSONSerialization.data(withJSONObject: jsonObject)
+                    print("DEBUG: Successfully re-encoded modified data, size: \(modifiedData.count)")
                     
                     // Decode back to LogseqBlock
                     let resolvedBlock = try decoder.decode(LogseqBlock.self, from: modifiedData)
+                    print("DEBUG: Successfully decoded resolved block with title: \(resolvedBlock.title ?? "nil")")
                     resolvedBlocks.append(resolvedBlock)
                 } catch {
-                    print("Error resolving block references: $error")
+                    print("ERROR: Failed in JSON encoding/decoding process: $error")
+                    print("DEBUG: Falling back to simple block creation")
                     // If encoding/decoding fails, create a simple block with the resolved title
                     resolvedBlocks.append(LogseqBlock(uuid: block.uuid, content: title))
                 }
