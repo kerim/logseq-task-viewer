@@ -172,10 +172,118 @@ class LogseqCLIClient {
         }
     }
 
-    /// Fetch tasks with "Doing" status
+    /// Fetch tasks with "Doing" status and resolve block references in titles
     func fetchDoingTasks() async throws -> [LogseqBlock] {
         let query = DatalogQueryBuilder.doingTasksQuery()
-        return try await executeQuery(query)
+        var blocks = try await executeQuery(query)
+        
+        // Resolve block references in task titles
+        blocks = try await resolveBlockReferencesInTitles(blocks)
+        
+        return blocks
+    }
+
+    /// Resolve block references in task titles (e.g., [[uuid]] -> actual title)
+    private func resolveBlockReferencesInTitles(_ blocks: [LogseqBlock]) async throws -> [LogseqBlock] {
+        // Extract all UUIDs from task titles that need resolution
+        var uuidToResolve = Set<String>()
+        
+        for block in blocks {
+            if let title = block.title {
+                // Find all UUID patterns in the title
+                let pattern = "\\[\\[([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\\]\\]"
+                let regex = try? NSRegularExpression(pattern: pattern)
+                
+                if let regex = regex {
+                    let matches = regex.matches(in: title, range: NSRange(title.startIndex..., in: title))
+                    for match in matches {
+                        if match.numberOfRanges > 1 {
+                            let uuidRange = match.range(at: 1)
+                            if let substringRange = Range(uuidRange, in: title) {
+                                let uuid = String(title[substringRange])
+                                uuidToResolve.insert(uuid)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // If no UUIDs to resolve, return original blocks
+        if uuidToResolve.isEmpty {
+            return blocks
+        }
+        
+        // Build a mapping of UUID to resolved title
+        var uuidToTitleMap = [String: String]()
+        
+        for uuid in uuidToResolve {
+            let resolveQuery = "[:find (pull ?b [:block/uuid :block/title]) :where [?b :block/uuid #uuid \"" + uuid + "\"]]"
+            
+            let (stdout, _, exitCode) = try await executeProcess(
+                path: config.logseqCLIPath,
+                arguments: ["query", resolveQuery, "-g", config.graphName]
+            )
+            
+            guard exitCode == 0, !stdout.isEmpty, stdout != "()" else {
+                continue
+            }
+            
+            // Parse the EDN result to extract title
+            if let titleMatch = stdout.range(of: "block/title \"([^\"]*)\"", options: .regularExpression) {
+                let titleRange = titleMatch
+                let titleString = String(stdout[titleRange])
+                // Extract title from "block/title \"actual-title\""
+                if let titleStart = titleString.range(of: "\"", options: .backwards) {
+                    let title = String(titleString[titleStart.upperBound...].dropLast())
+                    uuidToTitleMap[uuid] = title
+                }
+            }
+        }
+        
+        // Replace UUID references with resolved titles in block titles
+        var resolvedBlocks = [LogseqBlock]()
+        
+        for block in blocks {
+            if var title = block.title {
+                // Replace each UUID reference with its resolved title
+                for (uuid, resolvedTitle) in uuidToTitleMap {
+                    let pattern = "\\[\\[" + uuid + "\\]\\]"
+                    title = title.replacingOccurrences(of: pattern, with: "[[\(resolvedTitle)]]")
+                }
+                
+                // Create a new block with the resolved title using JSON encoding/decoding
+                // This is necessary because LogseqBlock is a struct with let properties
+                let encoder = JSONEncoder()
+                let decoder = JSONDecoder()
+                
+                do {
+                    // Encode the original block
+                    let encodedData = try encoder.encode(block)
+                    
+                    // Decode it back to a mutable dictionary
+                    var jsonObject = try JSONSerialization.jsonObject(with: encodedData) as? [String: Any] ?? [:]
+                    
+                    // Update the title in the dictionary
+                    jsonObject["block/title"] = title
+                    
+                    // Re-encode the modified dictionary
+                    let modifiedData = try JSONSerialization.data(withJSONObject: jsonObject)
+                    
+                    // Decode back to LogseqBlock
+                    let resolvedBlock = try decoder.decode(LogseqBlock.self, from: modifiedData)
+                    resolvedBlocks.append(resolvedBlock)
+                } catch {
+                    print("Error resolving block references: $error")
+                    // If encoding/decoding fails, create a simple block with the resolved title
+                    resolvedBlocks.append(LogseqBlock(uuid: block.uuid, content: title))
+                }
+            } else {
+                resolvedBlocks.append(block)
+            }
+        }
+        
+        return resolvedBlocks
     }
 
     /// Check if CLI is available and working
