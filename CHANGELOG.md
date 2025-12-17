@@ -1,0 +1,99 @@
+# Changelog
+
+All notable changes to the Logseq Task Viewer project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.0.1] - 2025-12-17
+
+### Added
+- ✅ Basic DOING tasks query functionality
+- ✅ Proper data decoding for tuple-based Logseq query results
+- ✅ Console display of task UUIDs and content
+- ✅ Status resolution for task statuses
+- ✅ Comprehensive test suite for query functionality
+- ✅ Development report documenting lessons learned
+- ✅ Changelog system for tracking future changes
+
+### Changed
+- 🔧 Fixed `DatalogQueryBuilder.doingTasksQuery()` to properly return task content
+- 🔧 Updated query structure to use tuple-based results `[block, status-name]`
+- 🔧 Improved status filtering using `[(= ?status-name "Doing")]` syntax
+- 🔧 Verified existing decoding logic handles new query format
+
+### Fixed
+- 🐛 App now displays actual task content instead of just UUIDs
+- 🐛 Query properly resolves status names to human-readable format
+- 🐛 Task content correctly extracted from `:block/title` field
+- 🐛 Status filtering works correctly for DOING tasks
+
+### Technical Details
+- **Query Structure**: Changed from single entity to tuple-based results
+- **Data Model**: Task content stored in `:block/title`, not `:block/content`
+- **Decoding**: Uses `LogseqBlockWithStatus` model for tuple parsing
+- **Testing**: Comprehensive test scripts verify all functionality
+
+### Known Limitations
+- ⚠️ No actual UI implementation (console output only)
+- ⚠️ Only DOING tasks supported (other statuses not implemented)
+- ⚠️ No error handling for missing data fields
+- ⚠️ No user interaction capabilities
+- ⚠️ Hardcoded graph name in configuration
+
+### Breaking Changes
+- None in this initial version
+
+### Migration Guide
+- No migration needed for initial version
+
+### Deprecations
+- None in this version
+
+## Development Notes
+
+### Version 0.0.1 Achievements
+- Successfully resolved the core issue of displaying task content
+- Established proper query patterns for Logseq data resolution
+- Created comprehensive testing infrastructure
+- Documented development process and lessons learned
+
+### Next Version Goals (0.0.2)
+- Implement actual UI for task display
+- Add support for all task statuses (TODO, DOING, DONE, etc.)
+- Improve error handling and edge cases
+- Add basic user interaction capabilities
+- Implement graph selection functionality
+
+## Test Results
+
+### Query Functionality
+- ✅ DOING tasks query returns 3 tasks with content
+- ✅ Status resolution works correctly
+- ✅ Data decoding handles tuple format properly
+- ✅ Project builds without errors
+
+### Sample Output
+```
+Task 1: "1st December [[68301217-1a99-4d9b-a2f8-e8756851ec28]] post"
+Task 2: "[[692a5173-3bb9-49fa-85d2-c74ba89ea796]]"
+Task 3: "Watch [[68f48c70-c9cf-4960-89b1-853802050a5f]] Films that I haven't seen yet"
+```
+
+## Contributing
+
+This changelog follows semantic versioning principles. When making changes:
+
+1. **Added**: New features
+2. **Changed**: Changes in existing functionality
+3. **Deprecated**: Soon-to-be removed features
+4. **Removed**: Removed features
+5. **Fixed**: Bug fixes
+6. **Security**: Vulnerability fixes
+
+## Version History
+
+- 0.0.1: Initial functional version with DOING tasks display
+- Future versions will be documented as development progresses

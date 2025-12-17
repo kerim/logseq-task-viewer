@@ -1,0 +1,475 @@
+=== Testing Tag ID Resolution ===
+
+Test 1: Querying all tag entities
+Query: [:find ?tag ?title :where [?tag :block/title ?title] [?tag :logseq.property/type "tag"] :limit 10]
+#{}
+
+
+Test 2: Querying tag entities by their IDs
+Looking up tag ID: 140
+#{}
+
+
+Looking up tag ID: 1166
+#{}
+
+
+Looking up tag ID: 2572
+#{}
+
+
+Looking up tag ID: 1191
+#{}
+
+
+Looking up tag ID: 2056
+#{}
+
+
+Test 3: Querying blocks with tag names
+Query: [:find (pull ?b [:block/uuid :block/content]) ?tag-name :where [?b :block/tags ?t] [?t :block/title ?tag-name] [?b :block/tags ?t2] [?t2 :block/title "Task"] :limit 5]
+([{:block/uuid #uuid "6878c617-f8bb-4f5e-83c6-19bb00060d5e"} "Task"]
+ [{:block/uuid #uuid "6832472f-6633-4be5-8cc7-bee55fc047cf"} "Task"]
+ [{:block/uuid #uuid "684ca108-5971-44ef-83fb-e33e5b4ed20d"}
+  "next steps"]
+ [{:block/uuid #uuid "684cd411-9230-44a0-8bdf-26a81d4fc5f1"} "Task"]
+ [{:block/uuid #uuid "68f72a57-d741-4a82-9c69-464a8addcfb2"} "Task"]
+ [{:block/uuid #uuid "6901a5e1-2a7d-47ca-8311-56f3b906218a"} "Task"]
+ [{:block/uuid #uuid "68209256-7ecb-4742-b59d-efb411bbbb9c"}
+  "next steps"]
+ [{:block/uuid #uuid "6844b963-e7a8-4d37-a50b-30a091b7cfc6"} "Task"]
+ [{:block/uuid #uuid "682a73cc-8bc6-4457-91a6-59a6e572139a"} "Task"]
+ [{:block/uuid #uuid "68620146-3b88-4e21-949b-a71d6d2bfa4c"} "Task"]
+ [{:block/uuid #uuid "683779bc-a122-4152-b273-4b61387b662f"} "Task"]
+ [{:block/uuid #uuid "684bf5e9-e862-4991-b8f3-f30984881d60"} "Task"]
+ [{:block/uuid #uuid "682a5cf2-68de-42b5-bf59-32196fc81e94"} "Task"]
+ [{:block/uuid #uuid "682bca60-6ff5-4be9-b5f4-c35581c31a18"} "Task"]
+ [{:block/uuid #uuid "693fdbef-315b-4d0b-a0d1-6ccbf9ff73dd"} "Task"]
+ [{:block/uuid #uuid "6844b857-3e90-44fe-b601-855f5a3ba7b3"}
+  "next steps"]
+ [{:block/uuid #uuid "682ab172-87ed-48c8-b9dd-83e958d79e0d"} "health"]
+ [{:block/uuid #uuid "68324768-3040-481e-b139-8ff31f5bea9e"}
+  "next steps"]
+ [{:block/uuid #uuid "6932af65-4edc-4c09-8f18-12446dcfb254"} "Task"]
+ [{:block/uuid #uuid "68d75845-33a1-42ac-b150-6f7c87f09213"} "Task"]
+ [{:block/uuid #uuid "6859f1fb-1a85-4cff-bfdf-5f66aec345f1"}
+  "next steps"]
+ [{:block/uuid #uuid "68f250ac-359f-49a4-ae32-179c3135ce2c"} "Task"]
+ [{:block/uuid #uuid "68436155-76e7-4f89-8d41-0bbfadc9d28a"} "Task"]
+ [{:block/uuid #uuid "6853aaee-af3e-4717-8821-a7a1c64bd0be"} "Task"]
+ [{:block/uuid #uuid "683246e2-7c90-48d6-9edd-82cae7b84a21"}
+  "next steps"]
+ [{:block/uuid #uuid "6833a5a4-bfbc-4464-9c62-e3266709e026"}
+  "next steps"]
+ [{:block/uuid #uuid "6844b717-fa5c-43e4-a499-9478a6ac1ef2"} "Task"]
+ [{:block/uuid #uuid "6877ad21-146e-4e20-8c51-7a48532b156f"} "Task"]
+ [{:block/uuid #uuid "684ca108-f125-4431-9a95-65d46185686b"}
+  "next steps"]
+ [{:block/uuid #uuid "686c4154-6f4e-4cc3-80cf-94e5c6559a48"}
+  "next steps"]
+ [{:block/uuid #uuid "68f1a618-21cd-445f-babb-d988532c6712"} "Task"]
+ [{:block/uuid #uuid "681ecfc9-fde8-4d65-83ba-0d3cebee4410"} "Task"]
+ [{:block/uuid #uuid "6901e936-db77-4fc3-bd23-287f3d248bb8"} "Task"]
+ [{:block/uuid #uuid "68552590-cf66-4918-8042-fa06072b71d2"} "Task"]
+ [{:block/uuid #uuid "6863a329-1ab9-4677-902a-2d9765a6ced8"} "Task"]
+ [{:block/uuid #uuid "685354e1-a0c5-4668-8000-868ea4993788"} "Task"]
+ [{:block/uuid #uuid "6843610f-c64b-4551-acf0-865e6470b64f"} "Task"]
+ [{:block/uuid #uuid "6877c232-6b5f-4f30-afa1-adf1a442d1c3"} "Task"]
+ [{:block/uuid #uuid "682092da-ab7f-45f9-9f67-27e22925c973"}
+  "next steps"]
+ [{:block/uuid #uuid "68267d71-67f8-4bec-9623-d4f88d7c19a3"} "Task"]
+ [{:block/uuid #uuid "68551a11-c835-4663-a35e-ba45e6cafc04"} "Task"]
+ [{:block/uuid #uuid "6844e384-7dc1-40f8-9e43-25ff89dfc756"}
+  "next steps"]
+ [{:block/uuid #uuid "687c45c8-2d67-45fe-8778-75086054dd66"} "Task"]
+ [{:block/uuid #uuid "6832474f-bcb8-469f-82ee-146d46d53852"} "Task"]
+ [{:block/uuid #uuid "6859f1fb-1a85-4cff-bfdf-5f66aec345f1"} "Task"]
+ [{:block/uuid #uuid "68218c42-8f51-4e96-abd6-1b2748f670ea"} "Task"]
+ [{:block/uuid #uuid "6842357e-9318-477f-9a61-49aa1860efe9"} "Task"]
+ [{:block/uuid #uuid "68f1a60b-7d91-48b8-8d11-1a1189b33aa8"} "Task"]
+ [{:block/uuid #uuid "6832477e-9175-43a8-9a02-4bcebdbe6c09"} "Task"]
+ [{:block/uuid #uuid "688b5944-58d0-4203-b3a9-c3d4c10b7532"} "Task"]
+ [{:block/uuid #uuid "68352ed2-2b72-47e3-b5f9-b2858fe453b4"} "Task"]
+ [{:block/uuid #uuid "68b2792f-192c-4639-9601-5fdef845c44f"} "Task"]
+ [{:block/uuid #uuid "68d5f93c-f8e6-47a5-9291-8e1a58fe65b9"} "Task"]
+ [{:block/uuid #uuid "681f549b-01ca-4cbb-bb8c-80225e83b296"} "repeat"]
+ [{:block/uuid #uuid "68b2796e-298d-4cdf-9b3d-dc384217f4c6"} "Task"]
+ [{:block/uuid #uuid "681ecdcc-ebc8-4e4b-be1f-f5de4ac898e2"} "Task"]
+ [{:block/uuid #uuid "68baa3d2-069b-4dbf-9dcc-293b1c98c06d"} "Task"]
+ [{:block/uuid #uuid "6822f22c-1ad2-4d61-919b-e5f06e85daf2"} "repeat"]
+ [{:block/uuid #uuid "683d3d6a-9f9c-49d5-9002-ff4a2725342a"} "Task"]
+ [{:block/uuid #uuid "685b3c8a-81b8-4f2c-bc17-5caf9e66aa22"}
+  "next steps"]
+ [{:block/uuid #uuid "691d6ead-44bd-4474-b1c6-511ac3f635c5"} "url"]
+ [{:block/uuid #uuid "68c699eb-8ae7-45c7-b4be-2184a62c635a"} "Task"]
+ [{:block/uuid #uuid "684e07b2-e67a-4d11-b7d0-f1c89929c23c"} "Task"]
+ [{:block/uuid #uuid "685c5ced-68f8-4db3-925e-78015532f6b7"} "Task"]
+ [{:block/uuid #uuid "685db7ea-741a-4d0b-a1f4-3a93ed17e8c3"} "Task"]
+ [{:block/uuid #uuid "681ed31a-541f-4675-b9d5-52922c821f7f"} "health"]
+ [{:block/uuid #uuid "68351627-7710-40ce-b005-85eec3f4d6e8"} "Task"]
+ [{:block/uuid #uuid "688f4d23-6e2d-4844-9b98-03956960602d"} "Task"]
+ [{:block/uuid #uuid "682e423a-7529-4208-ab99-2de181fc25e5"} "Task"]
+ [{:block/uuid #uuid "689884b8-13d8-45b4-af44-8cf1a362ed38"} "Task"]
+ [{:block/uuid #uuid "68368fb6-a502-4ae6-99ce-a4b79d825912"}
+  "feedback"]
+ [{:block/uuid #uuid "68f391a1-ef96-475f-89f0-caec3b47683f"} "Task"]
+ [{:block/uuid #uuid "68add80b-c714-4b1b-8ef3-995bbe389677"} "Task"]
+ [{:block/uuid #uuid "686c483f-fc6e-41a8-99ef-f1903d49d451"}
+  "next steps"]
+ [{:block/uuid #uuid "687f5b0a-efbb-4ba0-8b55-977c4b3cd549"} "Task"]
+ [{:block/uuid #uuid "686b7774-128e-46ac-867c-b74fb23be80b"} "repeat"]
+ [{:block/uuid #uuid "685b3cd8-c0bf-40ce-abbc-69d2c7766f62"} "Task"]
+ [{:block/uuid #uuid "681ed32b-c7d4-482d-bf4b-f937642b1db9"}
+  "next steps"]
+ [{:block/uuid #uuid "683054d5-c2ff-47f4-ad7c-82240ce1ee4a"} "Task"]
+ [{:block/uuid #uuid "68a944f3-5fe8-4da5-bd53-87281b35270e"} "Task"]
+ [{:block/uuid #uuid "68fc9ae9-e573-4e67-998f-d5a6c7d31af4"} "Task"]
+ [{:block/uuid #uuid "6902ba85-4983-4d89-ba33-62a5e6b29484"}
+  "feedback"]
+ [{:block/uuid #uuid "6859efd7-647f-4590-a317-63dc5b67894c"}
+  "next steps"]
+ [{:block/uuid #uuid "68577824-95ab-4ed2-9c1e-8c8b64080c9a"} "Task"]
+ [{:block/uuid #uuid "68f34541-a4e4-408e-9fd4-2b7d9bfff434"} "Task"]
+ [{:block/uuid #uuid "6888a74b-bfb1-4fef-935a-0a4eba12b084"} "Task"]
+ [{:block/uuid #uuid "681f500c-0789-4bca-911f-b4d0d2c6feaa"} "Task"]
+ [{:block/uuid #uuid "6825225a-ba62-4c85-b417-d6df479e0852"} "Task"]
+ [{:block/uuid #uuid "68eb0aff-9297-432b-897d-effca2c9870f"} "Task"]
+ [{:block/uuid #uuid "683a1df5-7bff-4a5e-a732-fcaf63ceb832"} "Task"]
+ [{:block/uuid #uuid "685db944-f35e-4240-a68b-33bed62c1290"} "Task"]
+ [{:block/uuid #uuid "68c02157-8202-4a30-86ca-b28a3453fcaf"} "Task"]
+ [{:block/uuid #uuid "68969f8a-1019-46b2-9958-edf77ea636ef"} "Task"]
+ [{:block/uuid #uuid "685b3c8a-81b8-4f2c-bc17-5caf9e66aa22"} "Task"]
+ [{:block/uuid #uuid "681ed2f4-9427-4b22-a259-cde9fbab61f8"} "Task"]
+ [{:block/uuid #uuid "685c9d3f-76db-49eb-b7aa-27d75bd75a50"} "Task"]
+ [{:block/uuid #uuid "682ab0b1-88bd-452c-8ea7-bdf1024fea10"} "Task"]
+ [{:block/uuid #uuid "6877c232-6b5f-4f30-afa1-adf1a442d1c3"}
+  "next steps"]
+ [{:block/uuid #uuid "68548ed2-9444-4aed-989d-0ca74bf022e0"} "Task"]
+ [{:block/uuid #uuid "685b3d05-5149-4ad9-a868-293fe0f9a1f7"} "Task"]
+ [{:block/uuid #uuid "68e12a6f-4250-43b6-82f3-1dbb9fdd5c6a"} "Task"]
+ [{:block/uuid #uuid "681f514c-705a-4d9f-a6fb-a6c202c4c674"} "Task"]
+ [{:block/uuid #uuid "684ca108-247f-4a56-92f7-d1f9a8d93a02"}
+  "next steps"]
+ [{:block/uuid #uuid "6852c536-73b1-4a80-8516-9cbf20dbc5b0"}
+  "next steps"]
+ [{:block/uuid #uuid "685f1fa8-1c3c-413a-9c1b-392feece04e9"} "Task"]
+ [{:block/uuid #uuid "683e7aca-2a50-434a-a1a9-54a6daf8be18"} "Task"]
+ [{:block/uuid #uuid "685db9b3-ee15-49a5-a18a-3271efeec59d"} "Task"]
+ [{:block/uuid #uuid "6844e3ed-e356-4a38-97b3-4ae008c85caa"}
+  "USA tasks"]
+ [{:block/uuid #uuid "686d7c8f-4afe-44bb-8fde-f9b79878c248"} "repeat"]
+ [{:block/uuid #uuid "68639ee0-6af7-4ce8-a723-b0783daf1446"} "Task"]
+ [{:block/uuid #uuid "68c29284-14ca-44ba-87b5-f9b3411d1640"} "Task"]
+ [{:block/uuid #uuid "686c4154-6f4e-4cc3-80cf-94e5c6559a48"} "Task"]
+ [{:block/uuid #uuid "6895c675-5981-474d-9ae1-d0fabecaa9d6"} "Task"]
+ [{:block/uuid #uuid "68baa3bd-f97f-41cf-9aff-c70a6f33e354"} "Task"]
+ [{:block/uuid #uuid "68324781-5602-469b-a8f8-990b4507629e"}
+  "next steps"]
+ [{:block/uuid #uuid "6855f5a8-cbb1-428f-ad32-60276ca0b25e"} "Task"]
+ [{:block/uuid #uuid "684ca108-f125-4431-9a95-65d46185686b"} "Task"]
+ [{:block/uuid #uuid "6850bee7-2a75-4564-a189-052ae25277bf"} "Task"]
+ [{:block/uuid #uuid "681ed2f4-9427-4b22-a259-cde9fbab61f8"} "health"]
+ [{:block/uuid #uuid "68b280ce-f1d4-47ce-a679-d89205204f89"} "Task"]
+ [{:block/uuid #uuid "68324717-a075-40da-b8ab-516953528f45"} "Task"]
+ [{:block/uuid #uuid "68f46ff1-75b2-4656-831d-74392a4d948e"} "Task"]
+ [{:block/uuid #uuid "68b1517e-9b9b-4efb-80b0-d41cd5ecb4a9"} "Task"]
+ [{:block/uuid #uuid "685519f1-0fd9-4876-9064-35ab334890aa"} "Task"]
+ [{:block/uuid #uuid "682d7b14-7f73-4e6d-bba5-45dd6858d89a"} "Task"]
+ [{:block/uuid #uuid "682beb08-6163-4ae0-a674-e294262ccecb"} "Task"]
+ [{:block/uuid #uuid "68f48c61-41f6-4ff1-a612-ea7338ebbbeb"} "Task"]
+ [{:block/uuid #uuid "682861d2-dab3-4220-bbb3-ce2dca7ffaa7"} "Task"]
+ [{:block/uuid #uuid "6855f5a8-cbb1-428f-ad32-60276ca0b25e"}
+  "feedback"]
+ [{:block/uuid #uuid "6861afe4-089b-4b92-ac7e-99c5fba77b19"} "Task"]
+ [{:block/uuid #uuid "686d7c8f-4afe-44bb-8fde-f9b79878c248"} "Task"]
+ [{:block/uuid #uuid "685b3d05-5149-4ad9-a868-293fe0f9a1f7"}
+  "next steps"]
+ [{:block/uuid #uuid "6878f69c-7416-4241-8a07-c1536b43673e"} "Task"]
+ [{:block/uuid #uuid "681f549b-01ca-4cbb-bb8c-80225e83b296"} "Task"]
+ [{:block/uuid #uuid "685c5b86-aa51-4587-b74c-168b1b8f4389"} "Task"]
+ [{:block/uuid #uuid "68f1a60e-e1aa-4d51-9238-5e36c1b4789e"} "Task"]
+ [{:block/uuid #uuid "6855c404-d6b7-4eee-b8f7-870389d016d2"} "Task"]
+ [{:block/uuid #uuid "684ca108-cf2f-4f7a-8ad2-219225c4a5e3"} "Task"]
+ [{:block/uuid #uuid "6855c9ef-0740-47d9-b480-685713593798"} "Task"]
+ [{:block/uuid #uuid "691d6ead-44bd-4474-b1c6-511ac3f635c5"} "Task"]
+ [{:block/uuid #uuid "68324781-5602-469b-a8f8-990b4507629e"} "Task"]
+ [{:block/uuid #uuid "688f4c3e-1445-4239-9ca7-b61a2985b954"}
+  "next steps"]
+ [{:block/uuid #uuid "6822bb36-78d7-4858-8da8-167ddf3c816c"} "Task"]
+ [{:block/uuid #uuid "68339b99-8f38-4209-9444-142582966301"}
+  "call for papers"]
+ [{:block/uuid #uuid "6859f005-2168-4940-8d78-d03977e43ad9"}
+  "next steps"]
+ [{:block/uuid #uuid "6877c71c-17fa-49bb-b0c8-afad563e109c"} "Task"]
+ [{:block/uuid #uuid "6838dd4b-e66b-42f2-8639-99de8b5ae570"}
+  "next steps"]
+ [{:block/uuid #uuid "687b5b88-84d9-458f-8eb0-44fe5fc0d5af"} "Task"]
+ [{:block/uuid #uuid "688b5664-d534-4eb6-819d-c09a2e57a929"} "Task"]
+ [{:block/uuid #uuid "6832477e-9175-43a8-9a02-4bcebdbe6c09"}
+  "next steps"]
+ [{:block/uuid #uuid "692935e8-ff76-4bdd-8fe9-f685ef4a84a3"} "Task"]
+ [{:block/uuid #uuid "68339b99-8f38-4209-9444-142582966301"} "Task"]
+ [{:block/uuid #uuid "688f4c98-d002-40e5-b98b-bfcc61107b83"} "Task"]
+ [{:block/uuid #uuid "6928f934-d93a-439a-b442-4891a7ff29a5"} "Task"]
+ [{:block/uuid #uuid "68200911-8b26-496a-a57a-05e619b9ce7d"} "Task"]
+ [{:block/uuid #uuid "68730674-db84-467f-841e-6ae01f5b35d9"} "Task"]
+ [{:block/uuid #uuid "6888a72f-2259-490a-bbe4-cc9015eab309"} "Task"]
+ [{:block/uuid #uuid "681f2e20-5695-42ea-b88f-a22b5ec20c80"}
+  "next steps"]
+ [{:block/uuid #uuid "68727202-2ade-4294-ada1-a0dc756bb734"} "Task"]
+ [{:block/uuid #uuid "685c9d5b-5b05-41a5-abe5-079a3a438934"}
+  "next steps"]
+ [{:block/uuid #uuid "685d058e-1c85-4aff-84c6-2157d2123fae"} "Task"]
+ [{:block/uuid #uuid "6877a875-f7e1-4111-bcb5-f2fa1008256d"} "Task"]
+ [{:block/uuid #uuid "684ca108-5971-44ef-83fb-e33e5b4ed20d"} "Task"]
+ [{:block/uuid #uuid "682ab172-87ed-48c8-b9dd-83e958d79e0d"} "Task"]
+ [{:block/uuid #uuid "685b3cd8-c0bf-40ce-abbc-69d2c7766f62"}
+  "next steps"]
+ [{:block/uuid #uuid "686c47d3-1034-4f7b-8979-7caec996764d"}
+  "next steps"]
+ [{:block/uuid #uuid "681f315c-d8c3-4a33-a368-74b903c7d180"} "Task"]
+ [{:block/uuid #uuid "68209256-7ecb-4742-b59d-efb411bbbb9c"} "Task"]
+ [{:block/uuid #uuid "692fc0d4-d46b-4bc8-ba33-7564d7909c07"} "Task"]
+ [{:block/uuid #uuid "681ed32b-c7d4-482d-bf4b-f937642b1db9"} "Task"]
+ [{:block/uuid #uuid "681f2e20-5695-42ea-b88f-a22b5ec20c80"} "Task"]
+ [{:block/uuid #uuid "68252249-acd5-4560-b21b-f8e3f2f1911a"} "Task"]
+ [{:block/uuid #uuid "6828f22d-d100-4da9-a601-b2cc730d8c5e"} "Task"]
+ [{:block/uuid #uuid "684e0793-1fab-478f-ab58-0cca3034e5aa"} "Task"]
+ [{:block/uuid #uuid "687f5b0a-efbb-4ba0-8b55-977c4b3cd549"}
+  "TIEFF rating"]
+ [{:block/uuid #uuid "6838dd4b-e66b-42f2-8639-99de8b5ae570"} "Task"]
+ [{:block/uuid #uuid "68233897-30a3-4d8f-bab4-75f4ae1aa9c5"} "Task"]
+ [{:block/uuid #uuid "6838d99c-e494-4b94-97e3-35fbdccf3fbb"}
+  "next steps"]
+ [{:block/uuid #uuid "682fb314-0ef5-49b9-8501-229e82668558"} "Task"]
+ [{:block/uuid #uuid "682ab172-87ed-48c8-b9dd-83e958d79e0d"}
+  "next steps"]
+ [{:block/uuid #uuid "681ecf92-6b67-44b6-a260-3bdb538b9871"}
+  "feedback"]
+ [{:block/uuid #uuid "688f54c5-7143-4c0a-8412-ac660350b4ce"} "Task"]
+ [{:block/uuid #uuid "688f4c3e-1445-4239-9ca7-b61a2985b954"} "Task"]
+ [{:block/uuid #uuid "681f4ed2-af97-49c9-9a43-c6240450a0d7"}
+  "feedback"]
+ [{:block/uuid #uuid "6844b857-3e90-44fe-b601-855f5a3ba7b3"} "Task"]
+ [{:block/uuid #uuid "6834696e-fada-4091-9291-19f7e27a6449"} "health"]
+ [{:block/uuid #uuid "685b3c8a-81b8-4f2c-bc17-5caf9e66aa22"}
+  "USA tasks"]
+ [{:block/uuid #uuid "6932afb7-9ffe-4973-869b-837ae306c2ba"} "Task"]
+ [{:block/uuid #uuid "684ca108-9914-4016-b8fd-8516f56e0c53"}
+  "next steps"]
+ [{:block/uuid #uuid "683777cf-4cdd-4bda-b590-4688d85c0aa9"} "Task"]
+ [{:block/uuid #uuid "68db35a3-d75e-4041-b3f2-1de4833af50a"} "Task"]
+ [{:block/uuid #uuid "687b5ae6-2c3b-4259-8943-ab51f849cd46"} "Task"]
+ [{:block/uuid #uuid "68324711-2c77-45ec-bb49-a1aa2d3580ac"}
+  "next steps"]
+ [{:block/uuid #uuid "68aaaeee-11a6-4c9b-a07e-974aa9b6da2d"} "Task"]
+ [{:block/uuid #uuid "684ca108-247f-4a56-92f7-d1f9a8d93a02"} "Task"]
+ [{:block/uuid #uuid "6844e384-7dc1-40f8-9e43-25ff89dfc756"} "Task"]
+ [{:block/uuid #uuid "685db9b3-ee15-49a5-a18a-3271efeec59d"}
+  "next steps"]
+ [{:block/uuid #uuid "68e70b41-8b9f-4f2f-a4fe-23a551fb3d6f"} "Task"]
+ [{:block/uuid #uuid "6845080d-0155-40ec-95bc-2d89d2325ff3"} "Task"]
+ [{:block/uuid #uuid "683d3d6a-9f9c-49d5-9002-ff4a2725342a"}
+  "feedback"]
+ [{:block/uuid #uuid "6906f111-4b9d-48f4-9d29-4fcc198efce2"} "Task"]
+ [{:block/uuid #uuid "687f6584-8509-42ef-a6a5-7f1e19808490"} "Task"]
+ [{:block/uuid #uuid "68f1b68a-91f5-4ed0-914d-1bf6ee9b6439"} "Task"]
+ [{:block/uuid #uuid "682092ce-84d1-429c-85a4-7586493d50a3"} "Task"]
+ [{:block/uuid #uuid "68227046-c9e9-4cdc-9dc1-0dfc054dff0c"} "Task"]
+ [{:block/uuid #uuid "6875b34c-9309-4c71-80b7-e0f100b89d65"}
+  "next steps"]
+ [{:block/uuid #uuid "685354e1-a0c5-4668-8000-868ea4993788"}
+  "next steps"]
+ [{:block/uuid #uuid "6859f1fb-1a85-4cff-bfdf-5f66aec345f1"}
+  "feedback"]
+ [{:block/uuid #uuid "68368fb6-a502-4ae6-99ce-a4b79d825912"} "Task"]
+ [{:block/uuid #uuid "69006761-6736-4a41-b83d-40e6bed16960"} "Task"]
+ [{:block/uuid #uuid "682092a7-cdae-497e-b495-e13d8750ab71"}
+  "next steps"]
+ [{:block/uuid #uuid "688f4c7f-0156-413d-b939-168433da26db"}
+  "next steps"]
+ [{:block/uuid #uuid "682092a7-cdae-497e-b495-e13d8750ab71"} "Task"]
+ [{:block/uuid #uuid "68b1f5a9-0a4a-4ad5-af53-1034128024db"} "Task"]
+ [{:block/uuid #uuid "6896af48-d2cd-4fc8-8ab2-320b783ba3d1"} "Task"]
+ [{:block/uuid #uuid "68c29475-79ce-42c7-bab2-fcca55f06110"} "Task"]
+ [{:block/uuid #uuid "6877b010-6b5e-432a-a7ec-5f1a18ea2d36"} "Task"]
+ [{:block/uuid #uuid "6839a6f5-cd5a-4ffa-a211-f195a3dabf53"} "Task"]
+ [{:block/uuid #uuid "6834e7d1-230c-4547-a0db-33c72baec6d0"} "Task"]
+ [{:block/uuid #uuid "69089199-d5b1-4c09-b20d-76325545fc5f"} "Task"]
+ [{:block/uuid #uuid "683857f4-fb1a-4e9a-a813-ce4da08268f0"}
+  "class prep"]
+ [{:block/uuid #uuid "68d9d580-50c9-40d5-b400-2ba8c32b96ae"} "Task"]
+ [{:block/uuid #uuid "686c47d3-1034-4f7b-8979-7caec996764d"} "Task"]
+ [{:block/uuid #uuid "6852c536-73b1-4a80-8516-9cbf20dbc5b0"} "Task"]
+ [{:block/uuid #uuid "68730674-db84-467f-841e-6ae01f5b35d9"}
+  "next steps"]
+ [{:block/uuid #uuid "6831a12c-6a8e-4a25-9b95-0274f3585b4d"}
+  "next steps"]
+ [{:block/uuid #uuid "682bca73-6f14-448b-8ec7-3b475c8104fd"} "Task"]
+ [{:block/uuid #uuid "68987faf-ac68-4504-933a-e14a489f9980"} "Task"]
+ [{:block/uuid #uuid "681f3161-0509-4bbc-b590-443164ccb336"} "Task"]
+ [{:block/uuid #uuid "6902ba85-4983-4d89-ba33-62a5e6b29484"} "Task"]
+ [{:block/uuid #uuid "68301238-c804-40c2-afd1-c7908c3b65c0"}
+  "feedback"]
+ [{:block/uuid #uuid "68f4f31a-57fa-4fca-ac39-7d3d9e4ca510"} "Task"]
+ [{:block/uuid #uuid "683246e2-7c90-48d6-9edd-82cae7b84a21"} "Task"]
+ [{:block/uuid #uuid "688f4c57-5eb7-4788-ad09-00237611a436"}
+  "next steps"]
+ [{:block/uuid #uuid "684e077d-0d20-409c-a498-f3ba9def2acb"} "Task"]
+ [{:block/uuid #uuid "691c9056-9f5c-473e-998c-7d2391e2b204"} "Task"]
+ [{:block/uuid #uuid "681f31e4-fee9-42fc-ac53-22821adb6ff8"} "Task"]
+ [{:block/uuid #uuid "68b151a3-b7ee-42d7-bbe5-1e08818d7d21"} "Task"]
+ [{:block/uuid #uuid "6832474f-bcb8-469f-82ee-146d46d53852"}
+  "next steps"]
+ [{:block/uuid #uuid "685b3cd8-c0bf-40ce-abbc-69d2c7766f62"}
+  "USA tasks"]
+ [{:block/uuid #uuid "689c3d3f-967e-4593-8458-2ff9f2536ecf"} "Task"]
+ [{:block/uuid #uuid "681ecfc9-fde8-4d65-83ba-0d3cebee4410"}
+  "next steps"]
+ [{:block/uuid #uuid "68f73a2e-cfcb-42e3-94e7-90743e739651"} "Task"]
+ [{:block/uuid #uuid "68324717-a075-40da-b8ab-516953528f45"}
+  "next steps"]
+ [{:block/uuid #uuid "6834696e-fada-4091-9291-19f7e27a6449"} "Task"]
+ [{:block/uuid #uuid "692a5166-51dd-420e-8b97-4bdae021dc11"} "Task"]
+ [{:block/uuid #uuid "688f4cd8-013e-4caa-9360-ea1f8351478a"} "Task"]
+ [{:block/uuid #uuid "681ed2f4-9427-4b22-a259-cde9fbab61f8"}
+  "next steps"]
+ [{:block/uuid #uuid "68c3849f-bbe4-4e75-9f25-263bf7a0430f"} "Task"]
+ [{:block/uuid #uuid "686b7471-7e81-4587-9473-047f60b1f1b0"}
+  "next steps"]
+ [{:block/uuid #uuid "683857f4-fb1a-4e9a-a813-ce4da08268f0"} "Task"]
+ [{:block/uuid #uuid "6877ae5f-4373-4515-9b3b-37906049d5c1"} "Task"]
+ [{:block/uuid #uuid "69006781-adee-4b23-9e99-44996edc7191"} "Task"]
+ [{:block/uuid #uuid "686a0780-61df-4c88-aae2-280c59015b1f"} "Task"]
+ [{:block/uuid #uuid "686492d0-490f-4dbe-8573-266dfea8466b"} "Task"]
+ [{:block/uuid #uuid "6838d9b8-eab2-4b07-a64c-31c5d878e451"}
+  "next steps"]
+ [{:block/uuid #uuid "68c438f4-3ce8-4b36-aebd-7547936dbe58"} "Task"]
+ [{:block/uuid #uuid "68301238-c804-40c2-afd1-c7908c3b65c0"} "Task"]
+ [{:block/uuid #uuid "6838dd24-65ca-4dac-ad7d-2a72fcdea75f"}
+  "next steps"]
+ [{:block/uuid #uuid "68c2a239-2c91-4785-9faf-9aadf584beb0"} "Task"]
+ [{:block/uuid #uuid "6822f22c-1ad2-4d61-919b-e5f06e85daf2"} "Task"]
+ [{:block/uuid #uuid "685c5b86-aa51-4587-b74c-168b1b8f4389"}
+  "next steps"]
+ [{:block/uuid #uuid "681ecd52-5809-45a8-98c1-8e86b20e7448"} "Task"]
+ [{:block/uuid #uuid "6838dd24-65ca-4dac-ad7d-2a72fcdea75f"} "Task"]
+ [{:block/uuid #uuid "682c69d2-4227-4dcd-93a9-dce0438f9ee0"} "Task"]
+ [{:block/uuid #uuid "68324792-00ed-4e97-9547-b44c1f3b2c61"}
+  "next steps"]
+ [{:block/uuid #uuid "681f3157-1181-451a-a802-cae2ee42e0ec"} "Task"]
+ [{:block/uuid #uuid "68bd0e4e-9991-4bc7-a9b1-f0e13a0186d9"} "Task"]
+ [{:block/uuid #uuid "6834696e-fada-4091-9291-19f7e27a6449"}
+  "next steps"]
+ [{:block/uuid #uuid "6828f08f-5db2-4ffe-b3fd-92ae3a42b2d8"} "Task"]
+ [{:block/uuid #uuid "683e163a-381e-4544-903d-052452a62b26"} "Task"]
+ [{:block/uuid #uuid "6838d99c-e494-4b94-97e3-35fbdccf3fbb"} "Task"]
+ [{:block/uuid #uuid "68567b72-defc-45c2-aea9-30743489b668"} "Task"]
+ [{:block/uuid #uuid "68213080-19bd-41c6-a833-060f1964e6c6"} "Task"]
+ [{:block/uuid #uuid "682d7b14-7f73-4e6d-bba5-45dd6858d89a"}
+  "feedback"]
+ [{:block/uuid #uuid "6888a712-db05-4617-b3ea-a43c745db35d"} "Task"]
+ [{:block/uuid #uuid "6888a71f-c915-4566-87cb-a0192add8576"} "Task"]
+ [{:block/uuid #uuid "68861222-963b-4cc1-b110-f26d44dc51f1"} "Task"]
+ [{:block/uuid #uuid "68969f6c-00c4-471a-b8d3-444ce328f5ff"} "Task"]
+ [{:block/uuid #uuid "682c66c8-7194-4591-b783-bbbb58ac4b63"} "Task"]
+ [{:block/uuid #uuid "68324711-2c77-45ec-bb49-a1aa2d3580ac"} "Task"]
+ [{:block/uuid #uuid "688f4c7f-0156-413d-b939-168433da26db"} "Task"]
+ [{:block/uuid #uuid "68324792-00ed-4e97-9547-b44c1f3b2c61"} "Task"]
+ [{:block/uuid #uuid "6838d9b8-eab2-4b07-a64c-31c5d878e451"} "Task"]
+ [{:block/uuid #uuid "687f5d4e-31be-45f1-a017-6d36f4bc17ae"}
+  "next steps"]
+ [{:block/uuid #uuid "682c66c8-7194-4591-b783-bbbb58ac4b63"}
+  "feedback"]
+ [{:block/uuid #uuid "681f3165-6470-4199-9748-e7bd47c47264"} "Task"]
+ [{:block/uuid #uuid "68493176-ee45-42fe-b4f0-c737816d1f7b"} "Task"]
+ [{:block/uuid #uuid "6911693d-c649-4219-a050-d42676033707"} "Task"]
+ [{:block/uuid #uuid "681ed31a-541f-4675-b9d5-52922c821f7f"}
+  "next steps"]
+ [{:block/uuid #uuid "681f3151-2e95-4a15-b6c0-9832a63bc8bb"} "Task"]
+ [{:block/uuid #uuid "68727202-2ade-4294-ada1-a0dc756bb734"}
+  "next steps"]
+ [{:block/uuid #uuid "686b7471-7e81-4587-9473-047f60b1f1b0"} "Task"]
+ [{:block/uuid #uuid "68247cc4-f494-4927-a04a-a5d3da51b014"} "Task"]
+ [{:block/uuid #uuid "681ecf92-6b67-44b6-a260-3bdb538b9871"} "Task"]
+ [{:block/uuid #uuid "6844e3ed-e356-4a38-97b3-4ae008c85caa"} "Task"]
+ [{:block/uuid #uuid "6877a875-f7e1-4111-bcb5-f2fa1008256d"}
+  "next steps"]
+ [{:block/uuid #uuid "685f1e1e-6cbd-48c8-932e-a16fe32361cf"} "Task"]
+ [{:block/uuid #uuid "69378bf3-7968-4538-8ec4-8b6515dd9419"} "Task"]
+ [{:block/uuid #uuid "6859efd7-647f-4590-a317-63dc5b67894c"} "Task"]
+ [{:block/uuid #uuid "68f38dc3-3017-4828-9463-686fcf54f86a"} "Task"]
+ [{:block/uuid #uuid "68567b72-defc-45c2-aea9-30743489b668"}
+  "next steps"]
+ [{:block/uuid #uuid "68624c3e-49d5-496e-858a-c58eae8caad6"} "Task"]
+ [{:block/uuid #uuid "687f5d4e-31be-45f1-a017-6d36f4bc17ae"} "Task"]
+ [{:block/uuid #uuid "681f2e20-5695-42ea-b88f-a22b5ec20c80"} "health"]
+ [{:block/uuid #uuid "6902dbd7-2b2c-415d-a4ab-7abce30aa0b9"} "Task"]
+ [{:block/uuid #uuid "689c4079-31cc-4c1d-b6d9-e4b2c6171df4"} "Task"]
+ [{:block/uuid #uuid "68552590-cf66-4918-8042-fa06072b71d2"}
+  "next steps"]
+ [{:block/uuid #uuid "6859efb4-73e4-4721-985e-2d6256655952"}
+  "next steps"]
+ [{:block/uuid #uuid "689984c3-ca2d-4976-aad9-349becaaf4ce"} "Task"]
+ [{:block/uuid #uuid "6832472f-6633-4be5-8cc7-bee55fc047cf"}
+  "next steps"]
+ [{:block/uuid #uuid "684fd980-584a-4626-807f-0e7e77955081"} "Task"]
+ [{:block/uuid #uuid "68b27c81-14f3-421a-8811-b6e1cd4b0dfb"} "Task"]
+ [{:block/uuid #uuid "6844e3ed-e356-4a38-97b3-4ae008c85caa"}
+  "next steps"]
+ [{:block/uuid #uuid "686c483f-fc6e-41a8-99ef-f1903d49d451"} "Task"]
+ [{:block/uuid #uuid "685c9d3f-76db-49eb-b7aa-27d75bd75a50"}
+  "next steps"]
+ [{:block/uuid #uuid "682092da-ab7f-45f9-9f67-27e22925c973"} "Task"]
+ [{:block/uuid #uuid "68f70c1b-003a-482b-89d1-1c87a1a6d333"} "Task"]
+ [{:block/uuid #uuid "6859f005-2168-4940-8d78-d03977e43ad9"} "Task"]
+ [{:block/uuid #uuid "6933c742-69e9-40a9-b049-1337cf92723f"} "Task"]
+ [{:block/uuid #uuid "684e07a0-529f-4f27-b554-b5edf138391a"} "Task"]
+ [{:block/uuid #uuid "681ed31a-541f-4675-b9d5-52922c821f7f"} "Task"]
+ [{:block/uuid #uuid "682e423a-7529-4208-ab99-2de181fc25e5"}
+  "next steps"]
+ [{:block/uuid #uuid "681f4ed2-af97-49c9-9a43-c6240450a0d7"} "Task"]
+ [{:block/uuid #uuid "682340cd-7a10-47cc-84a1-5b36d5609b22"} "repeat"]
+ [{:block/uuid #uuid "685c9d5b-5b05-41a5-abe5-079a3a438934"} "Task"]
+ [{:block/uuid #uuid "6859272a-92af-4d0c-a2ba-618f4fdbb36c"} "Task"]
+ [{:block/uuid #uuid "688f4c57-5eb7-4788-ad09-00237611a436"} "Task"]
+ [{:block/uuid #uuid "686311fd-d762-45ea-b6c8-0d846f668569"} "Task"]
+ [{:block/uuid #uuid "68324768-3040-481e-b139-8ff31f5bea9e"} "Task"]
+ [{:block/uuid #uuid "68535539-b6f8-4558-b37c-c9dc122dd386"}
+  "next steps"]
+ [{:block/uuid #uuid "6928ff11-c6b4-4a6a-b107-3b4ac6ce6428"} "Task"]
+ [{:block/uuid #uuid "684ca108-9914-4016-b8fd-8516f56e0c53"} "Task"]
+ [{:block/uuid #uuid "6837a18e-5f21-4bc9-aac7-24c9295881ef"} "Task"]
+ [{:block/uuid #uuid "681ed32b-c7d4-482d-bf4b-f937642b1db9"} "health"]
+ [{:block/uuid #uuid "6850bf49-61d7-4ad3-9c27-ccb5dbc52818"} "Task"]
+ [{:block/uuid #uuid "681f514c-705a-4d9f-a6fb-a6c202c4c674"} "repeat"]
+ [{:block/uuid #uuid "6875b34c-9309-4c71-80b7-e0f100b89d65"} "Task"]
+ [{:block/uuid #uuid "684ca108-cf2f-4f7a-8ad2-219225c4a5e3"}
+  "next steps"]
+ [{:block/uuid #uuid "6833a5a4-bfbc-4464-9c62-e3266709e026"} "Task"]
+ [{:block/uuid #uuid "68200911-8b26-496a-a57a-05e619b9ce7d"}
+  "next steps"]
+ [{:block/uuid #uuid "685b3d05-5149-4ad9-a868-293fe0f9a1f7"}
+  "USA tasks"]
+ [{:block/uuid #uuid "68461619-4c0e-45e0-946b-8f4f7199e092"} "Task"]
+ [{:block/uuid #uuid "682092ce-84d1-429c-85a4-7586493d50a3"}
+  "next steps"]
+ [{:block/uuid #uuid "68213080-19bd-41c6-a833-060f1964e6c6"}
+  "class prep"]
+ [{:block/uuid #uuid "682340cd-7a10-47cc-84a1-5b36d5609b22"} "Task"]
+ [{:block/uuid #uuid "688f4d01-af24-4af1-ac97-49a9bd1eec9a"} "Task"]
+ [{:block/uuid #uuid "688cab83-a175-4691-992d-610105839d80"} "Task"]
+ [{:block/uuid #uuid "686b7774-128e-46ac-867c-b74fb23be80b"} "Task"]
+ [{:block/uuid #uuid "68535539-b6f8-4558-b37c-c9dc122dd386"} "Task"]
+ [{:block/uuid #uuid "6831a12c-6a8e-4a25-9b95-0274f3585b4d"} "Task"]
+ [{:block/uuid #uuid "6859efb4-73e4-4721-985e-2d6256655952"} "Task"]
+ [{:block/uuid #uuid "68624abf-5640-4056-a0d6-9736596abc41"} "Task"]
+ [{:block/uuid #uuid "68218c42-8f51-4e96-abd6-1b2748f670ea"}
+  "feedback"]
+ [{:block/uuid #uuid "68e8eff1-352a-493d-9fb5-ceaca9bb4826"} "Task"]
+ [{:block/uuid #uuid "68436143-542f-4885-a6f8-31df72798d07"} "Task"]
+ [{:block/uuid #uuid "68c00a95-d2e9-4566-9f99-958e18bda7fb"} "Task"]
+ [{:block/uuid #uuid "68d8e5a6-560d-44c8-b37b-a3cd859dfe6b"} "Task"]
+ [{:block/uuid #uuid "68283d7a-2ec8-47d5-80ee-3cd35536bd3f"} "Task"])
+
+
