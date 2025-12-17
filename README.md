@@ -66,9 +66,9 @@ Task 3: "Watch [[68f48c70-c9cf-4960-89b1-853802050a5f]] Films that I haven't see
 ## 📚 Documentation
 
 ### Development Reports
-- [`DEVELOPMENT_REPORT.md`](DEVELOPMENT_REPORT.md) - Comprehensive development journey
-- [`CHANGELOG.md`](CHANGELOG.md) - Version history and changes
-- [`VERSION_0.0.1_SUMMARY.md`](VERSION_0.0.1_SUMMARY.md) - Current version details
+- [`docs/DEVELOPMENT_REPORT.md`](docs/DEVELOPMENT_REPORT.md) - Comprehensive development journey
+- [`docs/CHANGELOG.md`](docs/CHANGELOG.md) - Version history and changes
+- [`docs/VERSION_0.0.1_SUMMARY.md`](docs/VERSION_0.0.1_SUMMARY.md) - Current version details
 
 ### Technical Documentation
 - Query structure and patterns
@@ -86,9 +86,9 @@ Task 3: "Watch [[68f48c70-c9cf-4960-89b1-853802050a5f]] Films that I haven't see
 
 ### Running Tests
 ```bash
-./test_final_integration.sh  # Complete test suite
-./test_doing_tasks.sh       # DOING tasks specifically
-./test_app_decoding.sh      # Decoding verification
+./tests/test_final_integration.sh  # Complete test suite
+./tests/test_doing_tasks.sh       # DOING tasks specifically
+./tests/test_app_decoding.sh      # Decoding verification
 ```
 
 ## 🔧 Technical Details
