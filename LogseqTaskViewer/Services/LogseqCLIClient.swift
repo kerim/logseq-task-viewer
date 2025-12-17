@@ -177,14 +177,26 @@ class LogseqCLIClient {
         let query = DatalogQueryBuilder.doingTasksQuery()
         var blocks = try await executeQuery(query)
         
+        print("DEBUG: Found \(blocks.count) blocks before resolution")
+        for block in blocks {
+            print("DEBUG: Original title: \(block.title ?? "nil")")
+        }
+        
         // Resolve block references in task titles
         blocks = try await resolveBlockReferencesInTitles(blocks)
+        
+        print("DEBUG: After resolution:")
+        for block in blocks {
+            print("DEBUG: Resolved title: \(block.title ?? "nil")")
+        }
         
         return blocks
     }
 
     /// Resolve block references in task titles (e.g., [[uuid]] -> actual title)
     private func resolveBlockReferencesInTitles(_ blocks: [LogseqBlock]) async throws -> [LogseqBlock] {
+        print("DEBUG: ***** STARTING REFERENCE RESOLUTION *****")
+        
         // Extract all UUIDs from task titles that need resolution
         var uuidToResolve = Set<String>()
         
@@ -202,6 +214,7 @@ class LogseqCLIClient {
                             if let substringRange = Range(uuidRange, in: title) {
                                 let uuid = String(title[substringRange])
                                 uuidToResolve.insert(uuid)
+                                print("DEBUG: Found UUID to resolve: \(uuid)")
                             }
                         }
                     }
@@ -211,13 +224,17 @@ class LogseqCLIClient {
         
         // If no UUIDs to resolve, return original blocks
         if uuidToResolve.isEmpty {
+            print("DEBUG: No UUIDs found to resolve")
             return blocks
         }
+        
+        print("DEBUG: Found \(uuidToResolve.count) UUIDs to resolve: \(uuidToResolve.joined(separator: ", "))")
         
         // Build a mapping of UUID to resolved title
         var uuidToTitleMap = [String: String]()
         
         for uuid in uuidToResolve {
+            print("DEBUG: Resolving UUID: \(uuid)")
             let resolveQuery = "[:find (pull ?b [:block/uuid :block/title]) :where [?b :block/uuid #uuid \"" + uuid + "\"]]"
             
             let (stdout, _, exitCode) = try await executeProcess(
@@ -226,17 +243,24 @@ class LogseqCLIClient {
             )
             
             guard exitCode == 0, !stdout.isEmpty, stdout != "()" else {
+                print("DEBUG: Resolution failed for UUID \(uuid)")
                 continue
             }
             
+            print("DEBUG: Resolution result: \(stdout)")
+            
             // Parse the EDN result to extract title
-            if let titleMatch = stdout.range(of: "block/title \"([^\"]*)\"", options: .regularExpression) {
-                let titleRange = titleMatch
-                let titleString = String(stdout[titleRange])
-                // Extract title from "block/title \"actual-title\""
-                if let titleStart = titleString.range(of: "\"", options: .backwards) {
-                    let title = String(titleString[titleStart.upperBound...].dropLast())
-                    uuidToTitleMap[uuid] = title
+            // Look for pattern: :block/title "actual-title"
+            let pattern = ":block/title \"([^\"]*)\""
+            if let regex = try? NSRegularExpression(pattern: pattern) {
+                let matches = regex.matches(in: stdout, range: NSRange(stdout.startIndex..., in: stdout))
+                if let match = matches.first, match.numberOfRanges > 1 {
+                    let titleRange = match.range(at: 1)
+                    if let substringRange = Range(titleRange, in: stdout) {
+                        let title = String(stdout[substringRange])
+                        uuidToTitleMap[uuid] = title
+                        print("DEBUG: Resolved \(uuid) → \(title)")
+                    }
                 }
             }
         }
@@ -250,6 +274,7 @@ class LogseqCLIClient {
                 for (uuid, resolvedTitle) in uuidToTitleMap {
                     let pattern = "\\[\\[" + uuid + "\\]\\]"
                     title = title.replacingOccurrences(of: pattern, with: "[[\(resolvedTitle)]]")
+                    print("DEBUG: Replaced \(uuid) with \(resolvedTitle)")
                 }
                 
                 // Create a new block with the resolved title using JSON encoding/decoding
@@ -283,6 +308,7 @@ class LogseqCLIClient {
             }
         }
         
+        print("DEBUG: Reference resolution complete")
         return resolvedBlocks
     }
 
