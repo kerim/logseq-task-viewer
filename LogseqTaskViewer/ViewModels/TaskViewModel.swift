@@ -23,9 +23,20 @@ class TaskViewModel: ObservableObject {
         do {
             let blocks = try await client.fetchDoingTasks()
             tasks = blocks
+            
+            // Debug: Log what we received
+            print("DEBUG: Received \(blocks.count) tasks from Logseq")
+            for (index, block) in blocks.prefix(3).enumerated() {
+                print("DEBUG: Task \(index + 1): \(block.content ?? block.title ?? "No content")")
+                print("DEBUG:   Priority: \(block.priority?.name ?? "nil")")
+                print("DEBUG:   Scheduled: \(block.scheduled ?? 0)")
+                print("DEBUG:   Deadline: \(block.deadline ?? 0)")
+            }
+            
             isLoading = false
         } catch {
             errorMessage = error.localizedDescription
+            print("DEBUG: Error loading tasks: \(error.localizedDescription)")
             isLoading = false
         }
     }

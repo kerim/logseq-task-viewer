@@ -291,6 +291,11 @@ struct TaskItemView: View {
         return "\(year)-\(month)-\(day)"
     }
     
+    // Debug function to log task properties
+    private func debugLogTaskProperties() {
+        print("DEBUG: Task properties - Priority: \(task.priority?.name ?? "nil"), Scheduled: \(task.scheduled ?? 0), Deadline: \(task.deadline ?? 0)")
+    }
+    
     // Helper function to get priority display
     private func priorityDisplay() -> String? {
         if let priorityRef = task.priority {
@@ -301,6 +306,13 @@ struct TaskItemView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
+            // Debug: Log task properties when view appears
+            Text("")
+                .hidden()
+                .onAppear {
+                    debugLogTaskProperties()
+                }
+            
             // Task title with clickable links - VISUAL TEST
             ClickableTextView(
                 text: task.title ?? task.content ?? "Untitled Task",
