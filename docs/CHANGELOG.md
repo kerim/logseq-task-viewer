@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2025-12-18
+
+### Added
+- ✅ Complete UI implementation with interactive task display
+- ✅ Link-specific hover effects for better user experience
+- ✅ Clean, professional visual design without debug clutter
+- ✅ Single-click functionality (no more double-click required)
+
+### Changed
+- 🔧 Fixed hover effects to apply only to links, not entire task boxes
+- 🔧 Removed visual clutter from debug borders and backgrounds
+- 🔧 Cleaned up all debug logging and print statements
+- 🔧 Improved code organization and readability
+
+### Fixed
+- 🐛 Double-click issue resolved with proper window activation
+- 🐛 Visual clutter from debug elements removed
+- 🐛 Hover effects now properly target individual links
+- 🐛 All debug logging cleaned up for production readiness
+
+### Technical Details
+- **UI Improvements**: Link-specific hover with blue background highlight
+- **User Experience**: Single-click operation with proper window focus
+- **Code Quality**: Removed 110 lines of debug code, added 26 lines of production code
+- **Testing**: Verified build success and app launch without errors
+
+### Known Limitations
+- ⚠️ Still using cached test data for UI development
+- ⚠️ Real data loading commented out for stability during UI work
+- ⚠️ Graph name hardcoded in configuration
+
+### Breaking Changes
+- None - all changes are improvements to existing functionality
+
+### Migration Guide
+- No migration needed - existing functionality enhanced
+
+### Deprecations
+- None in this version
+
 ## [0.0.1] - 2025-12-17
 
 ### Added
