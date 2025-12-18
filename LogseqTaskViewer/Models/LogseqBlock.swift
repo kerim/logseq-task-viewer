@@ -80,18 +80,32 @@ struct LogseqBlock: Codable {
         status = try container.decodeIfPresent(BlockReference.self, forKey: .status)
         priority = try container.decodeIfPresent(BlockReference.self, forKey: .priority)
         
-        // Handle scheduled date - try both timestamp and YYYYMMDD formats
-        if let scheduledTimestamp = try? container.decodeIfPresent(Double.self, forKey: .scheduled) {
-            scheduled = LogseqBlock.convertTimestampToYYYYMMDD(scheduledTimestamp)
+        // Handle scheduled date - check if it's a timestamp (large number) or YYYYMMDD format
+        if let scheduledValue = try? container.decodeIfPresent(Int.self, forKey: .scheduled) {
+            // If the number is larger than 99991231 (Dec 31, 9999), it's likely a timestamp in milliseconds
+            if scheduledValue > 99991231 {
+                // Convert timestamp (milliseconds) to YYYYMMDD
+                scheduled = LogseqBlock.convertTimestampToYYYYMMDD(Double(scheduledValue))
+            } else {
+                // It's already in YYYYMMDD format
+                scheduled = scheduledValue
+            }
         } else {
-            scheduled = try container.decodeIfPresent(Int.self, forKey: .scheduled)
+            scheduled = nil
         }
         
-        // Handle deadline date - try both timestamp and YYYYMMDD formats
-        if let deadlineTimestamp = try? container.decodeIfPresent(Double.self, forKey: .deadline) {
-            deadline = LogseqBlock.convertTimestampToYYYYMMDD(deadlineTimestamp)
+        // Handle deadline date - check if it's a timestamp (large number) or YYYYMMDD format
+        if let deadlineValue = try? container.decodeIfPresent(Int.self, forKey: .deadline) {
+            // If the number is larger than 99991231 (Dec 31, 9999), it's likely a timestamp in milliseconds
+            if deadlineValue > 99991231 {
+                // Convert timestamp (milliseconds) to YYYYMMDD
+                deadline = LogseqBlock.convertTimestampToYYYYMMDD(Double(deadlineValue))
+            } else {
+                // It's already in YYYYMMDD format
+                deadline = deadlineValue
+            }
         } else {
-            deadline = try container.decodeIfPresent(Int.self, forKey: .deadline)
+            deadline = nil
         }
     }
 }
