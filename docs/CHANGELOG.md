@@ -26,11 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🐛 Visual clutter from debug elements removed
 - 🐛 Hover effects now properly target individual links
 - 🐛 All debug logging cleaned up for production readiness
+- 🐛 Added refined task-level hover effect while maintaining link-specific hover
 
 ### Technical Details
-- **UI Improvements**: Link-specific hover with blue background highlight
+- **UI Improvements**: Link-specific hover with blue background highlight + subtle task-level hover
 - **User Experience**: Single-click operation with proper window focus
-- **Code Quality**: Removed 110 lines of debug code, added 26 lines of production code
+- **Code Quality**: Removed 110 lines of debug code, added 32 lines of production code
 - **Testing**: Verified build success and app launch without errors
 
 ### Known Limitations
