@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2025-12-18
+
+### Added
+- ✅ Live DOING query functionality with real Logseq data
+- ✅ Loading state with progress indicator
+- ✅ Error handling with user-friendly error messages
+- ✅ State management for all UI scenarios
+
+### Changed
+- 🔧 Replaced cached test data with live query results
+- 🔧 Enhanced TaskListView to handle loading, error, empty, and success states
+- 🔧 Improved user experience with visual feedback during data loading
+
+### Fixed
+- 🐛 App now shows real data from Logseq instead of cached test data
+- 🐛 Added proper error handling for query failures
+- 🐛 Improved state management for better user experience
+
+### Technical Details
+- **Live Data**: App now queries Logseq in real-time
+- **State Management**: Comprehensive handling of loading, error, empty, and success states
+- **User Experience**: Visual feedback during data loading with progress indicators
+- **Error Handling**: User-friendly error messages with retry capability
+
+### Known Limitations
+- ⚠️ Still using hardcoded graph name in configuration
+- ⚠️ No retry mechanism for failed queries yet
+- ⚠️ Query is fixed to DOING tasks only
+
+### Breaking Changes
+- None - enhancement to existing functionality
+
+### Migration Guide
+- No migration needed - existing functionality enhanced with live data
+
+### Deprecations
+- None in this version
+
 ## [0.0.2] - 2025-12-18
 
 ### Added
