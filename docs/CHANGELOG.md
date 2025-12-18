@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6] - 2025-12-18
+
+### Added
+- ✅ Settings UI for custom datalog queries
+- ✅ Sample query selection (DOING, TODO, All Tasks, High Priority)
+- ✅ Custom query editor with syntax highlighting
+- ✅ Query execution functionality for custom queries
+- ✅ Settings access via gear icon in main UI
+
+### Changed
+- 🔧 Extended TaskViewModel with custom query execution methods
+- 🔧 Added query methods to DatalogQueryBuilder (todoTasksQuery, highPriorityTasksQuery)
+- 🔧 Enhanced main UI with settings button and sheet presentation
+
+### Fixed
+- 🐛 Added missing query methods for comprehensive query support
+- 🐛 Improved UI navigation with settings integration
+- 🐛 Enhanced user experience with query management
+
+### Technical Details
+- **Settings UI**: Modal sheet with sample queries and custom query editor
+- **Query Execution**: Async execution of custom datalog queries
+- **Sample Queries**: Predefined queries for common task filtering scenarios
+- **User Experience**: Intuitive interface for query management and execution
+
+### Known Limitations
+- ⚠️ Still using hardcoded graph name in configuration
+- ⚠️ No query saving/persistence yet
+- ⚠️ No query history or favorites
+
+### Breaking Changes
+- None - enhancement to existing functionality
+
+### Migration Guide
+- No migration needed - existing functionality enhanced with query management
+
+### Deprecations
+- None in this version
+
 ## [0.0.5] - 2025-12-18
 
 ### Fixed
