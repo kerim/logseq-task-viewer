@@ -7,6 +7,8 @@ class TaskViewModel: ObservableObject {
     @Published var tasks: [LogseqBlock] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var showingSettings: Bool = false
+    @Published var customQuery: String = ""
     
     private nonisolated let client: LogseqCLIClient
     private var cancellables = Set<AnyCancellable>()
@@ -75,5 +77,25 @@ class TaskViewModel: ObservableObject {
     /// Clear all tasks
     func clearTasks() {
         tasks = []
+    }
+    
+    /// Execute custom datalog query
+    func executeCustomQuery(_ query: String) async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let blocks = try await client.executeQuery(query)
+            tasks = blocks
+            isLoading = false
+        } catch {
+            errorMessage = error.localizedDescription
+            isLoading = false
+        }
+    }
+    
+    /// Toggle settings visibility
+    func toggleSettings() {
+        showingSettings.toggle()
     }
 }

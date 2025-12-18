@@ -109,6 +109,31 @@ class DatalogQueryBuilder {
         """
     }
 
+    /// Query for tasks with "todo" status only
+    static func todoTasksQuery() -> String {
+        return """
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
+        :where
+            [?b :block/tags ?t]
+            [?t :block/title "Task"]
+            [?b :logseq.property/status ?s]
+            [?s :block/title ?status-name]
+            [(= ?status-name "TODO")]]
+        """
+    }
+
+    /// Query for high priority tasks (priority A)
+    static func highPriorityTasksQuery() -> String {
+        return """
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline])
+        :where
+            [?b :block/tags ?t]
+            [?t :block/title "Task"]
+            [?b :logseq.property/priority ?p]
+            [?p :block/title "A"]]
+        """
+    }
+
     /// Format date for Logseq queries (YYYYMMDD integer)
     private static func formatDateForQuery(_ date: Date) -> Int {
         let formatter = DateFormatter()
