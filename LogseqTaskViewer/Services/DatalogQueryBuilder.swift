@@ -99,7 +99,7 @@ class DatalogQueryBuilder {
     /// Query for tasks with "doing" status only
     static func doingTasksQuery() -> String {
         return """
-        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties]) ?status-name
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
         :where
             [?b :block/tags ?t]
             [?t :block/title "Task"]

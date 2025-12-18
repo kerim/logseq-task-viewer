@@ -23,7 +23,7 @@ enum LogseqCLIError: Error, LocalizedError {
     }
 }
 
-class LogseqCLIClient {
+class LogseqCLIClient: @unchecked Sendable {
     private let config: CLIConfig
 
     init(config: CLIConfig) {

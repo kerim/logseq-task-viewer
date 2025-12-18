@@ -41,6 +41,20 @@ struct LogseqBlock: Codable {
         self.scheduled = nil
         self.deadline = nil
     }
+    
+    // Test initializer with properties
+    init(uuid: String, content: String, priority: String?, scheduled: Int?, deadline: Int?) {
+        self.uuid = uuid
+        self.title = nil
+        self.content = content
+        self.properties = nil
+        self.tags = nil
+        self.page = nil
+        self.status = nil
+        self.priority = priority.flatMap { BlockReference(id: nil, title: $0, name: $0) }
+        self.scheduled = scheduled
+        self.deadline = deadline
+    }
 }
 
 /// Represents a query result that includes both block data and resolved status name
