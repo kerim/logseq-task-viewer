@@ -269,31 +269,41 @@ struct TaskItemView: View {
         NSWorkspace.shared.open(url)
     }
     
-    // Helper function to format date from YYYYMMDD integer
-    private func formatDate(_ dateInt: Int?) -> String? {
-        guard let dateInt = dateInt else { return nil }
+    // Helper function to format date from YYYYMMDD integer or timestamp
+    private func formatDate(_ dateValue: Any?) -> String? {
+        // Handle nil case
+        guard let dateValue = dateValue else { return nil }
         
-        let dateString = String(dateInt)
-        guard dateString.count == 8 else { return nil }
-        
-        let year = String(dateString.prefix(4))
-        let month = String(dateString.dropFirst(4).prefix(2))
-        let day = String(dateString.dropFirst(6).prefix(2))
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        if let date = formatter.date(from: "\(year)-\(month)-\(day)") {
+        // Try to handle as timestamp first (milliseconds since epoch)
+        if let timestamp = dateValue as? Double {
+            let date = Date(timeIntervalSince1970: timestamp / 1000.0)
+            let formatter = DateFormatter()
             formatter.dateStyle = .medium
             formatter.timeStyle = .none
             return formatter.string(from: date)
         }
         
-        return "\(year)-\(month)-\(day)"
-    }
-    
-    // Debug function to log task properties
-    private func debugLogTaskProperties() {
-        print("DEBUG: Task properties - Priority: \(task.priority?.name ?? "nil"), Scheduled: \(task.scheduled ?? 0), Deadline: \(task.deadline ?? 0)")
+        // Try to handle as YYYYMMDD integer
+        if let dateInt = dateValue as? Int {
+            let dateString = String(dateInt)
+            guard dateString.count == 8 else { return nil }
+            
+            let year = String(dateString.prefix(4))
+            let month = String(dateString.dropFirst(4).prefix(2))
+            let day = String(dateString.dropFirst(6).prefix(2))
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            if let date = formatter.date(from: "\(year)-\(month)-\(day)") {
+                formatter.dateStyle = .medium
+                formatter.timeStyle = .none
+                return formatter.string(from: date)
+            }
+            
+            return "\(year)-\(month)-\(day)"
+        }
+        
+        return nil
     }
     
     // Helper function to get priority display
@@ -306,13 +316,6 @@ struct TaskItemView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            // Debug: Log task properties when view appears
-            Text("")
-                .hidden()
-                .onAppear {
-                    debugLogTaskProperties()
-                }
-            
             // Task title with clickable links - VISUAL TEST
             ClickableTextView(
                 text: task.title ?? task.content ?? "Untitled Task",

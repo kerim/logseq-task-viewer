@@ -55,6 +55,45 @@ struct LogseqBlock: Codable {
         self.scheduled = scheduled
         self.deadline = deadline
     }
+    
+    // Helper function to convert timestamp to YYYYMMDD
+    private static func convertTimestampToYYYYMMDD(_ timestamp: Double) -> Int? {
+        let date = Date(timeIntervalSince1970: timestamp / 1000.0)
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
+        return year * 10000 + month * 100 + day
+    }
+    
+    // Custom decoder to handle timestamp conversion
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Decode basic fields
+        uuid = try container.decode(String.self, forKey: .uuid)
+        title = try container.decodeIfPresent(String.self, forKey: .title)
+        content = try container.decodeIfPresent(String.self, forKey: .content)
+        properties = try container.decodeIfPresent([String: PropertyValue].self, forKey: .properties)
+        tags = try container.decodeIfPresent([BlockReference].self, forKey: .tags)
+        page = try container.decodeIfPresent(BlockReference.self, forKey: .page)
+        status = try container.decodeIfPresent(BlockReference.self, forKey: .status)
+        priority = try container.decodeIfPresent(BlockReference.self, forKey: .priority)
+        
+        // Handle scheduled date - try both timestamp and YYYYMMDD formats
+        if let scheduledTimestamp = try? container.decodeIfPresent(Double.self, forKey: .scheduled) {
+            scheduled = LogseqBlock.convertTimestampToYYYYMMDD(scheduledTimestamp)
+        } else {
+            scheduled = try container.decodeIfPresent(Int.self, forKey: .scheduled)
+        }
+        
+        // Handle deadline date - try both timestamp and YYYYMMDD formats
+        if let deadlineTimestamp = try? container.decodeIfPresent(Double.self, forKey: .deadline) {
+            deadline = LogseqBlock.convertTimestampToYYYYMMDD(deadlineTimestamp)
+        } else {
+            deadline = try container.decodeIfPresent(Int.self, forKey: .deadline)
+        }
+    }
 }
 
 /// Represents a query result that includes both block data and resolved status name
