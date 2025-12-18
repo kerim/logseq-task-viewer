@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Known Issues (To Be Fixed)
+- ⚠️ Double-click issue: First click brings window to front, second click registers
+- ⚠️ Link resolution in custom queries: Links show UUIDs instead of resolved references
+- ⚠️ TODO query performance: Sample query returns too many tasks
+- ⚠️ Loading text: Still says "Loading DOING..." regardless of query type
+
+### Current State
+- ✅ Live DOING query working with real data
+- ✅ Timestamp conversion working (dates display correctly)
+- ✅ Settings UI with sample queries and custom query editor
+- ✅ Dynamic title working for success states
+- ✅ Loading/error/empty states implemented
+- ✅ Query execution framework in place
+
 ## [0.0.6] - 2025-12-18
 
 ### Added
