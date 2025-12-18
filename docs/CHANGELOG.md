@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4] - 2025-12-18
+
+### Added
+- ✅ Timestamp to date conversion for EDN data compatibility
+- ✅ Custom JSON decoder for LogseqBlock to handle multiple date formats
+- ✅ Comprehensive date parsing that handles both YYYYMMDD and timestamp formats
+
+### Changed
+- 🔧 Updated LogseqBlock model with custom decoder for timestamp conversion
+- 🔧 Enhanced date formatting to handle milliseconds-since-epoch timestamps
+- 🔧 Improved data compatibility with Logseq EDN export format
+
+### Fixed
+- 🐛 Date parsing now correctly handles timestamp format (1772130600000) from EDN data
+- 🐛 Scheduled and deadline dates now display properly for live query results
+- 🐛 Maintained backward compatibility with existing YYYYMMDD format
+- 🐛 Dates are now converted from timestamps to readable format (e.g., "Dec 18, 2025")
+
+### Technical Details
+- **Date Conversion**: Timestamps (milliseconds since epoch) are converted to YYYYMMDD integers
+- **Format Support**: Handles both timestamp format (1772130600000) and YYYYMMDD format (20251218)
+- **User Experience**: Dates now display in user-friendly format like "Dec 18, 2025"
+- **Data Compatibility**: Works with Logseq's EDN export format from SQLite database
+
+### Known Limitations
+- ⚠️ Still using hardcoded graph name in configuration
+- ⚠️ No retry mechanism for failed queries yet
+- ⚠️ Query is fixed to DOING tasks only
+
+### Breaking Changes
+- None - enhancement to existing functionality
+
+### Migration Guide
+- No migration needed - existing functionality enhanced with proper date handling
+
+### Deprecations
+- None in this version
+
 ## [0.0.3] - 2025-12-18
 
 ### Added
