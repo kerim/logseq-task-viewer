@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5] - 2025-12-18
+
+### Fixed
+- 🐛 Fixed timestamp detection logic to properly handle large timestamp values
+- 🐛 Dates now display correctly instead of showing Jan 1, 1970
+- 🐛 Improved timestamp vs YYYYMMDD format detection using magnitude check
+
+### Technical Details
+- **Timestamp Detection**: Values > 99991231 are treated as timestamps (milliseconds)
+- **Format Conversion**: Timestamps are properly converted to YYYYMMDD format
+- **Backward Compatibility**: Still supports existing YYYYMMDD format
+- **User Experience**: Dates now show correct values like "Dec 18, 2025" instead of "Jan 1, 1970"
+
 ## [0.0.4] - 2025-12-18
 
 ### Added
