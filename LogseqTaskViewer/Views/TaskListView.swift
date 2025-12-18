@@ -20,7 +20,11 @@ struct TaskListView: View {
                 .foregroundColor(.secondary)
             
             // Task list
-            if viewModel.tasks.isEmpty {
+            if viewModel.isLoading {
+                LoadingView()
+            } else if let errorMessage = viewModel.errorMessage {
+                ErrorView(message: errorMessage)
+            } else if viewModel.tasks.isEmpty {
                 EmptyTaskView()
             } else {
                 ScrollView {
@@ -65,6 +69,52 @@ struct EmptyTaskView: View {
             Text("All tasks are completed or not yet started.")
                 .font(.caption)
                 .foregroundColor(.gray)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+    }
+}
+
+/// View for when data is loading
+struct LoadingView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                .scaleEffect(1.5)
+            
+            Text("Loading DOING tasks...")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Text("Fetching data from Logseq...")
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+    }
+}
+
+/// View for when an error occurs
+struct ErrorView: View {
+    let message: String
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 48))
+                .foregroundColor(.red)
+            
+            Text("Error Loading Tasks")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Text(message)
+                .font(.caption)
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()

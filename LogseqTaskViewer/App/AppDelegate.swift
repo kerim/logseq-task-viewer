@@ -76,16 +76,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         UserDefaults.standard.set(config.graphName, forKey: "selectedGraph")
         viewModel = TaskViewModel(client: client)
         
-        // Load cached data first for immediate UI
-        viewModel?.loadCachedTasks()
-        
-        // For development: Don't load real data to keep the test UI stable
-        // Uncomment the following to load real data in production:
-        // DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 1.0) {
-        //     Task {
-        //         await self.viewModel?.loadDoingTasks()
-        //     }
-        // }
+        // Load real data from Logseq
+        DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 0.5) {
+            Task {
+                await self.viewModel?.loadDoingTasks()
+            }
+        }
     }
 
 
