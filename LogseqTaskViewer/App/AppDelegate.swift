@@ -10,10 +10,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Debug: App launched
-        let debugMessage = "DEBUG: AppDelegate.applicationDidFinishLaunching called\n"
-        try? debugMessage.data(using: .utf8)?.write(to: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log"), options: .atomic)
-        
         // Create menu bar item
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
@@ -43,50 +39,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             // Create content only when first shown to avoid layout issues
             if popover.contentViewController == nil {
-                let debugMessage = "DEBUG: Creating popover content. viewModel is \(viewModel != nil ? "not nil" : "nil")\n"
-                try? debugMessage.data(using: .utf8)?.write(to: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log"), options: .atomic)
-                
                 if let viewModel = viewModel {
-                    let debugMessage2 = "DEBUG: Using TaskListView with \(viewModel.tasks.count) tasks\n"
-                    if let debugFile = try? FileHandle(forWritingTo: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log")) {
-                        debugFile.seekToEndOfFile()
-                        debugFile.write(debugMessage2.data(using: .utf8) ?? Data())
-                        debugFile.closeFile()
-                    }
-                    
                     popover.contentViewController = NSHostingController(
                         rootView: TaskListView(viewModel: viewModel)
                             .frame(width: 400, height: 600)
                     )
                 } else {
-                    let debugMessage3 = "DEBUG: Using Loading... text instead\n"
-                    if let debugFile = try? FileHandle(forWritingTo: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log")) {
-                        debugFile.seekToEndOfFile()
-                        debugFile.write(debugMessage3.data(using: .utf8) ?? Data())
-                        debugFile.closeFile()
-                    }
-                    
                     popover.contentViewController = NSHostingController(
                         rootView: Text("Loading...")
                             .frame(width: 400, height: 600)
                     )
                 }
-            } else {
-                let debugMessage4 = "DEBUG: Popover content already exists, reusing it\n"
-                if let debugFile = try? FileHandle(forWritingTo: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log")) {
-                    debugFile.seekToEndOfFile()
-                    debugFile.write(debugMessage4.data(using: .utf8) ?? Data())
-                    debugFile.closeFile()
-                }
             }
             
             // Use dispatch to avoid potential layout recursion
             DispatchQueue.main.async {
-                print("DEBUG: About to show popover")
                 popover.show(relativeTo: button.bounds,
                             of: button,
                             preferredEdge: .minY)
-                print("DEBUG: Popover shown")
+                // Activate the app to ensure clicks register immediately
+                NSApp.activate(ignoringOtherApps: true)
             }
         }
     }

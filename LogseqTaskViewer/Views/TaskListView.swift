@@ -7,73 +7,10 @@ struct TaskListView: View {
     
     init(viewModel: TaskViewModel) {
         self.viewModel = viewModel
-        let debugMessage = "DEBUG: TaskListView initialized with \(viewModel.tasks.count) tasks\n"
-        if let debugFile = try? FileHandle(forWritingTo: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log")) {
-            debugFile.seekToEndOfFile()
-            debugFile.write(debugMessage.data(using: .utf8) ?? Data())
-            debugFile.closeFile()
-        } else {
-            try? debugMessage.data(using: .utf8)?.write(to: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log"))
-        }
-        
-        // Debug: Check task properties
-        for (index, task) in viewModel.tasks.enumerated() {
-            let taskDebug = "DEBUG: Task \(index): priority=\(task.priority?.name ?? "nil"), scheduled=\(task.scheduled ?? 0), deadline=\(task.deadline ?? 0)\n"
-            if let debugFile = try? FileHandle(forWritingTo: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log")) {
-                debugFile.seekToEndOfFile()
-                debugFile.write(taskDebug.data(using: .utf8) ?? Data())
-                debugFile.closeFile()
-            }
-        }
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Debug: TaskListView is being rendered
-            Text("")
-                .hidden()
-                .onAppear {
-                    let debugMessage = "DEBUG: TaskListView body being rendered with \(viewModel.tasks.count) tasks\n"
-                    if let debugFile = try? FileHandle(forWritingTo: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log")) {
-                        debugFile.seekToEndOfFile()
-                        debugFile.write(debugMessage.data(using: .utf8) ?? Data())
-                        debugFile.closeFile()
-                    } else {
-                        try? debugMessage.data(using: .utf8)?.write(to: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log"))
-                    }
-                    
-                    // Check if properties will be displayed
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "yyyyMMdd"
-                    
-                    for (index, task) in viewModel.tasks.enumerated() {
-                        let priorityDisplay = task.priority?.name ?? "nil"
-                        let scheduledDisplay = task.scheduled.flatMap { date in
-                            let dateString = String(date)
-                            guard dateString.count == 8 else { return nil }
-                            let year = String(dateString.prefix(4))
-                            let month = String(dateString.dropFirst(4).prefix(2))
-                            let day = String(dateString.dropFirst(6).prefix(2))
-                            return "\(year)-\(month)-\(day)"
-                        } ?? "nil"
-                        
-                        let deadlineDisplay = task.deadline.flatMap { date in
-                            let dateString = String(date)
-                            guard dateString.count == 8 else { return nil }
-                            let year = String(dateString.prefix(4))
-                            let month = String(dateString.dropFirst(4).prefix(2))
-                            let day = String(dateString.dropFirst(6).prefix(2))
-                            return "\(year)-\(month)-\(day)"
-                        } ?? "nil"
-                        
-                        let uiDebug = "DEBUG: Task \(index) UI: priority=\(priorityDisplay), scheduled=\(scheduledDisplay), deadline=\(deadlineDisplay)\n"
-                        if let debugFile = try? FileHandle(forWritingTo: URL(fileURLWithPath: "/tmp/LogseqTaskViewer.debug.log")) {
-                            debugFile.seekToEndOfFile()
-                            debugFile.write(uiDebug.data(using: .utf8) ?? Data())
-                            debugFile.closeFile()
-                        }
-                    }
-                }
             // Header
             Text("DOING Tasks")
                 .font(.headline)
@@ -194,19 +131,36 @@ struct ClickableTextView: View {
                 ))
             }
             
-            // Add the clickable link
+            // Add the clickable link with link-specific hover effects
             let linkText = String(text[link.range])
-            let isThisLinkHovered = hoveredLink == link.link
+            let isThisLinkHovered = Binding<Bool>(
+                get: { self.hoveredLink == link.link },
+                set: { isHovered in
+                    if isHovered {
+                        self.hoveredLink = link.link
+                    } else {
+                        self.hoveredLink = nil
+                    }
+                }
+            )
+            
             views.append(AnyView(
                 Text(linkText)
                     .font(.body)
-                    .foregroundColor(isThisLinkHovered ? .blue : .blue)
-                    .underline(isThisLinkHovered)
-                    .background(isThisLinkHovered ? Color.blue.opacity(0.2) : Color.clear)
+                    .foregroundColor(isThisLinkHovered.wrappedValue ? .blue : .blue)
+                    .underline(isThisLinkHovered.wrappedValue)
+                    .background(isThisLinkHovered.wrappedValue ? Color.blue.opacity(0.2) : Color.clear)
                     .onTapGesture {
                         onLinkClick(link.link)
                     }
                     .help("Click to open linked page in Logseq")
+                    .onHover { isHovered in
+                        if isHovered {
+                            self.hoveredLink = link.link
+                        } else {
+                            self.hoveredLink = nil
+                        }
+                    }
             ))
             
             currentIndex = link.range.upperBound
@@ -230,13 +184,14 @@ struct ClickableTextView: View {
         }
         .lineLimit(2)
         .padding(.vertical, 12)
+        .onTapGesture(perform: onBackgroundClick)
+        .help("Click to open task in Logseq")
     }
 }
 
 /// View for individual task item
 struct TaskItemView: View {
     let task: LogseqBlock
-    @State private var isHovered = false
     
     // Helper function to generate Logseq URL for opening the task
     private func logseqTaskURL() -> URL? {
@@ -299,16 +254,12 @@ struct TaskItemView: View {
             ClickableTextView(
                 text: task.title ?? task.content ?? "Untitled Task",
                 onLinkClick: { link in
-                    NSLog("DEBUG: Link clicked: %@", link)
                     if let url = logseqPageURL(for: link) {
-                        NSLog("DEBUG: Opening link URL: %@", url.absoluteString)
                         openLogseqURL(url)
                     }
                 },
                 onBackgroundClick: {
-                    NSLog("DEBUG: Task background clicked")
                     if let url = logseqTaskURL() {
-                        NSLog("DEBUG: Opening task URL: %@", url.absoluteString)
                         openLogseqURL(url)
                     }
                 }
@@ -365,26 +316,19 @@ struct TaskItemView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            NSLog("DEBUG: Task clicked - opening Logseq")
             if let url = logseqTaskURL() {
-                NSLog("DEBUG: Opening URL: %@", url.absoluteString)
                 openLogseqURL(url)
             }
         }
         .help("Click anywhere to open this task in Logseq")
         .padding(.vertical, 4)
         .onHover { hover in
-            isHovered = hover
             if hover {
                 NSCursor.pointingHand.push()
             } else {
                 NSCursor.pointingHand.pop()
             }
         }
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.blue.opacity(0.5), lineWidth: isHovered ? 2 : 0)
-        )
     }
 }
 
