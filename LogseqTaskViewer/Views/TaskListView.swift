@@ -192,6 +192,7 @@ struct ClickableTextView: View {
 /// View for individual task item
 struct TaskItemView: View {
     let task: LogseqBlock
+    @State private var isTaskHovered = false
     
     // Helper function to generate Logseq URL for opening the task
     private func logseqTaskURL() -> URL? {
@@ -323,12 +324,17 @@ struct TaskItemView: View {
         .help("Click anywhere to open this task in Logseq")
         .padding(.vertical, 4)
         .onHover { hover in
+            isTaskHovered = hover
             if hover {
                 NSCursor.pointingHand.push()
             } else {
                 NSCursor.pointingHand.pop()
             }
         }
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isTaskHovered ? Color.gray.opacity(0.1) : Color.clear)
+        )
     }
 }
 
