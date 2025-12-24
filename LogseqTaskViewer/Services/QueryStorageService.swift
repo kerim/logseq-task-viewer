@@ -95,11 +95,6 @@ class QueryStorageService {
                 isReadOnly: false
             ),
             SavedQuery(
-                name: "All Tasks",
-                queryText: DatalogQueryBuilder.allTasksQuery(),
-                isReadOnly: false
-            ),
-            SavedQuery(
                 name: "High Priority",
                 queryText: DatalogQueryBuilder.highPriorityTasksQuery(),
                 isReadOnly: false

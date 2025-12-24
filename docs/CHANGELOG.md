@@ -12,12 +12,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Current State
 - ✅ Query Manager with saved queries and double-click execution
-- ✅ All Tasks query performance fixed (status filtering)
+- ✅ Default queries: DOING, TODO, High Priority
 - ✅ Query Manager window floats on top
 - ✅ Live DOING query working with real data
 - ✅ Timestamp conversion working (dates display correctly)
 - ✅ Loading/error/empty states implemented
 - ✅ Query execution framework in place
+
+## [0.0.10] - 2025-12-24
+
+### Removed
+- 🗑️ Removed "All Tasks" query from default queries (still hung even with status filtering)
+
+### Changed
+- 🔧 Default queries now: DOING Tasks, TODO Tasks, High Priority
+- 🔧 App defaults to DOING Tasks on startup (already existing behavior)
+
+### Technical Details
+- Simplified default query set for testing
+- "All Tasks" still had performance issues even with Done/Cancelled filtering
+- May add back later with more aggressive filtering or pagination
 
 ## [0.0.9] - 2025-12-24
 
