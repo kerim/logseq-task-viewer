@@ -132,7 +132,7 @@ struct QueryManagerView: View {
             // Version footer
             Divider()
             HStack {
-                Text("v0.0.1")
+                Text("v0.0.2")
                     .font(.caption2)
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 12)

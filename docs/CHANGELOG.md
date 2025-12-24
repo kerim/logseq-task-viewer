@@ -12,12 +12,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Current State
 - ✅ Query Manager with saved queries and double-click execution
-- ✅ All Tasks query performance fixed (result limiting)
+- ✅ All Tasks query performance fixed (Datalog-level limiting)
 - ✅ Query Manager window floats on top
 - ✅ Live DOING query working with real data
 - ✅ Timestamp conversion working (dates display correctly)
 - ✅ Loading/error/empty states implemented
 - ✅ Query execution framework in place
+
+## [0.0.8] - 2025-12-24
+
+### Fixed
+- 🐛 **CRITICAL**: Fixed All Tasks query hanging by adding `:limit 51` to Datalog query
+- 🐛 Query now limits at DATABASE level instead of application level
+- 🐛 Logseq CLI no longer processes hundreds of tasks before returning results
+
+### Changed
+- 🔧 Updated Query Manager version to v0.0.2
+- 🔧 `allTasksQuery()` now includes `:limit 51` clause in Datalog query
+- 🔧 Query fetches 51 results to detect if more exist, displays 50
+
+### Technical Details
+- **Root Cause**: Logseq CLI was fetching ALL tasks (hundreds) from database before returning
+- **Previous Fix (v0.0.7)**: Attempted to limit at Swift level AFTER CLI returned (didn't work)
+- **Correct Fix (v0.0.8)**: Added `:limit 51` to Datalog query itself
+- **Query Flow Now**:
+  1. Datalog query limited to 51 results at database level
+  2. Swift receives max 51 results quickly
+  3. If 51 results received, display 50 and show "more results" notice
+  4. Block reference resolution only processes displayed results
+
+### Breaking Changes
+- None - performance fix only
 
 ## [0.0.7] - 2025-12-24
 

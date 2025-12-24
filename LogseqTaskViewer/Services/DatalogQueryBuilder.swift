@@ -30,26 +30,16 @@ class DatalogQueryBuilder {
         """
     }
 
-    /// Build query for all tasks with status (more flexible)
+    /// Build query for all tasks with status (limited to 51 to detect if more exist)
     static func allTasksQuery() -> String {
         return """
-        [:find (pull ?b [
-            :block/uuid
-            :block/content
-            :block/tags
-            :block/properties
-            :block/page
-            {:block/page [:block/title :block/name]}
-            :logseq.property/status
-            :logseq.property/priority
-            :logseq.property/scheduled
-            :logseq.property/deadline
-        ]) ?status-name
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
         :where
             [?b :block/tags ?t]
             [?t :block/title "Task"]
             [?b :logseq.property/status ?s]
-            [?s :block/title ?status-name]]
+            [?s :block/title ?status-name]
+        :limit 51]
         """
     }
 
@@ -109,8 +99,47 @@ class DatalogQueryBuilder {
         """
     }
 
-    /// Query for tasks with "todo" status only
+    /// Query for tasks with "Todo" status only (note: capital T, not TODO)
     static func todoTasksQuery() -> String {
+        return """
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
+        :where
+            [?b :block/tags ?t]
+            [?t :block/title "Task"]
+            [?b :logseq.property/status ?s]
+            [?s :block/title ?status-name]
+            [(= ?status-name "Todo")]]
+        """
+    }
+
+    /// Query for TODO tasks with priority only (for performance)
+    static func todoTasksWithPriorityQuery() -> String {
+        return """
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
+        :where
+            [?b :block/tags ?t]
+            [?t :block/title "Task"]
+            [?b :logseq.property/status ?s]
+            [?s :block/title ?status-name]
+            [(= ?status-name "Todo")]
+            [?b :logseq.property/priority ?p]]
+        """
+    }
+
+    /// Query to check if there are any TODO tasks (for performance checking)
+    static func todoTasksCountQuery() -> String {
+        return """
+        [:find (count ?b)
+        :where
+            [?b :block/tags ?t]
+            [?t :block/title "Task"]
+            [?b :logseq.property/status ?s]
+            [?s :block/title "TODO"]]
+        """
+    }
+
+    /// Query for all TODO tasks (fallback when priority query returns empty)
+    static func allTodoTasksQuery() -> String {
         return """
         [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
         :where
@@ -131,6 +160,35 @@ class DatalogQueryBuilder {
             [?t :block/title "Task"]
             [?b :logseq.property/priority ?p]
             [?p :block/title "A"]]
+        """
+    }
+
+    /// Comprehensive TODO query that handles both direct task tags and class-based task inheritance
+    /// This query finds TODO tasks with priority, supporting both traditional #Task tags and
+    /// class-based task systems where blocks extend a "Task" class
+    static func comprehensiveTodoTasksQuery() -> String {
+        return """
+        [:find (pull ?b [
+            :block/uuid
+            :block/title
+            :block/content
+            :block/tags
+            :block/properties
+            :logseq.property/status
+            :logseq.property/priority
+            :logseq.property/scheduled
+            :logseq.property/deadline
+        ])
+        :where
+            (or-join [?b]
+                (and [?b :block/tags ?t]
+                    [?t :block/title "Task"])
+                (and [?b :block/tags ?child]
+                    [?child :logseq.property.class/extends ?parent]
+                    [?parent :block/title "Task"]))
+            [?b :logseq.property/status ?s]
+            [?s :block/title "Todo"]
+            [?b :logseq.property/priority ?p]]
         """
     }
 
