@@ -8,6 +8,7 @@ struct QueryManagerView: View {
     @State private var selectedQueryId: UUID?
     @State private var editingQueryId: UUID?
     @State private var showingDeleteConfirmation = false
+    @State private var showingResetConfirmation = false
     @State private var queryToDelete: SavedQuery?
     @State private var previewResults: [LogseqBlock] = []
     @State private var isPreviewLoading = false
@@ -50,6 +51,17 @@ struct QueryManagerView: View {
                 Text("Are you sure you want to delete '\(query.name)'?")
             }
         }
+        .alert("Reset to Defaults?", isPresented: $showingResetConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Reset", role: .destructive) {
+                let storage = QueryStorageService()
+                storage.resetToDefaults()
+                queryManager.loadQueries()
+                selectedQueryId = queryManager.queries.first?.id
+            }
+        } message: {
+            Text("This will delete all custom queries and restore default queries. This cannot be undone.")
+        }
     }
 
     // MARK: - Query List Pane
@@ -64,6 +76,14 @@ struct QueryManagerView: View {
                     .padding(.vertical, 8)
 
                 Spacer()
+
+                Button(action: { showingResetConfirmation = true }) {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.subheadline)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.trailing, 4)
+                .help("Reset to default queries")
 
                 Button(action: createNewQuery) {
                     Image(systemName: "plus")

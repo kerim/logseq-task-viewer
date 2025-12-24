@@ -52,19 +52,57 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
             
-            // Use dispatch to avoid potential layout recursion
-            DispatchQueue.main.async {
-                popover.show(relativeTo: button.bounds,
-                            of: button,
-                            preferredEdge: .minY)
-                // Activate the app to ensure clicks register immediately
-                NSApp.activate(ignoringOtherApps: true)
+            // Use robust activation approach
+            activateAppAndShowPopover(button: button, popover: popover)
+        }
+    }
+    
+    /// Activate app and show popover with proper focus handling
+    private func activateAppAndShowPopover(button: NSStatusBarButton, popover: NSPopover) {
+        // Ensure app is active
+        NSApp.activate(ignoringOtherApps: true)
+        
+        // Create temporary window if no windows exist to ensure proper activation
+        var tempWindow: NSWindow?
+        if NSApp.windows.isEmpty {
+            tempWindow = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 1, height: 1),
+                styleMask: .borderless,
+                backing: .buffered,
+                defer: false
+            )
+            tempWindow?.makeKeyAndOrderFront(nil)
+        }
+        
+        // Configure popover
+        popover.behavior = .transient
+        popover.animates = true
+        
+        // Small delay to ensure activation completes
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+            print("DEBUG: Showing popover after activation delay")
+            
+            // Show popover
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            
+            // Ensure popover window gets focus and is on top
+            if let popoverWindow = popover.contentViewController?.view.window {
+                popoverWindow.level = .floating
+                popoverWindow.makeKeyAndOrderFront(nil)
+                print("DEBUG: Popover window made key and ordered front")
+            }
+            
+            // Clean up temporary window
+            tempWindow?.close()
+            
+            // Additional focus handling
+            if let currentWindow = NSApp.windows.first(where: { $0.isVisible }) {
+                currentWindow.makeKeyAndOrderFront(nil)
             }
         }
     }
 
     private func initializeViewModel() {
-        // TODO: Replace "your-graph-name" with your actual Logseq graph name
         let config = CLIConfig(
             graphName: "LSEQ 2025-12-15",
             logseqCLIPath: "/opt/homebrew/bin/logseq",
@@ -75,11 +113,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Store the graph name in UserDefaults so URL generation can access it
         UserDefaults.standard.set(config.graphName, forKey: "selectedGraph")
         viewModel = TaskViewModel(client: client)
-        
-        // Load real data from Logseq
+        print("DEBUG: AppDelegate created ViewModel: \(ObjectIdentifier(viewModel as AnyObject))")
+
+        // Load last used query or fall back to DOING tasks
+        let storage = QueryStorageService()
+
+        // Run one-time migration to new query versioning system
+        storage.migrateQueriesIfNeeded()
+
         DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 0.5) {
             Task {
-                await self.viewModel?.loadDoingTasks()
+                if let lastQuery = storage.loadLastUsedQuery() {
+                    // Load last used query with explicit query name
+                    await self.viewModel?.executeCustomQuery(lastQuery.queryText, queryName: lastQuery.name)
+                } else {
+                    // Fallback to DOING tasks using the new execution path
+                    let doingQuery = DatalogQueryBuilder.doingTasksQuery()
+                    await self.viewModel?.executeCustomQuery(doingQuery, queryName: "DOING")
+                }
             }
         }
     }

@@ -6,6 +6,7 @@ struct SavedQuery: Codable, Identifiable, Equatable {
     var name: String
     var queryText: String
     var isReadOnly: Bool
+    var isDefault: Bool  // Marks app-provided default queries
     let createdAt: Date
     var lastModified: Date
 
@@ -13,12 +14,14 @@ struct SavedQuery: Codable, Identifiable, Equatable {
         id: UUID = UUID(),
         name: String,
         queryText: String,
-        isReadOnly: Bool = false
+        isReadOnly: Bool = false,
+        isDefault: Bool = false
     ) {
         self.id = id
         self.name = name
         self.queryText = queryText
         self.isReadOnly = isReadOnly
+        self.isDefault = isDefault
         self.createdAt = Date()
         self.lastModified = Date()
     }
@@ -28,7 +31,8 @@ struct SavedQuery: Codable, Identifiable, Equatable {
         SavedQuery(
             name: "\(name) Copy",
             queryText: queryText,
-            isReadOnly: false
+            isReadOnly: false,
+            isDefault: false  // Duplicates are never defaults
         )
     }
 }

@@ -12,12 +12,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Current State
 - ✅ Query Manager with saved queries and double-click execution
-- ✅ Default queries: DOING, TODO, High Priority
+- ✅ Default queries: DOING, TODO, High Priority (regenerate automatically)
 - ✅ Query Manager window floats on top
 - ✅ Live DOING query working with real data
 - ✅ Timestamp conversion working (dates display correctly)
 - ✅ Loading/error/empty states implemented
 - ✅ Query execution framework in place
+- ✅ User-created queries persist across launches
+- ✅ Reset to defaults safety mechanism
+
+## [0.0.11] - 2025-12-24
+
+### Fixed
+- 🐛 **CRITICAL**: Fixed query caching breaking development workflow
+- 🐛 Default queries now update automatically when code changes
+- 🐛 Removed temporary UserDefaults clear that ran on every launch
+
+### Added
+- ✅ `isDefault` flag to distinguish app-provided queries from user-created queries
+- ✅ Automatic default query regeneration on each app launch
+- ✅ Reset button (counterclockwise arrow) in Query Manager to restore defaults
+- ✅ Confirmation dialog for reset operation
+- ✅ One-time migration system for existing users (`queriesMigratedToV2`)
+
+### Changed
+- 🔧 Default queries now regenerate from code on every launch (always up-to-date)
+- 🔧 User-created queries persist across launches (not deleted with defaults)
+- 🔧 Query Manager version updated to v0.0.3
+
+### Technical Details
+- **Root Problem**: UserDefaults caching old queries broke testing workflow - code changes didn't apply
+- **Solution**: Added `isDefault: Bool` field to SavedQuery model
+- **Load Pattern**:
+  1. Load saved queries from UserDefaults
+  2. Remove all queries with `isDefault: true` (old defaults)
+  3. Generate fresh defaults from code (always current)
+  4. Preserve user queries (isDefault: false)
+  5. Save combined list
+- **Migration**: One-time migration clears old data using `queriesMigratedToV2` flag
+- **Safety Net**: Reset button allows users to recover if custom queries break the app
+- **Files Modified**:
+  - SavedQuery.swift: Added isDefault field
+  - QueryStorageService.swift: Regenerate defaults, migration, reset functionality
+  - AppDelegate.swift: Removed temp UserDefaults clear, added migration call
+  - QueryManagerView.swift: Added reset button with confirmation dialog
+
+### Breaking Changes
+- Existing saved queries will be cleared on first launch after update (one-time migration)
+- Users will need to recreate any custom queries they had saved
+
+### Developer Benefits
+- ✅ Code changes to default queries apply immediately
+- ✅ No manual UserDefaults clearing during development
+- ✅ Testing workflow no longer broken by cached queries
+- ✅ Separation between defaults and user queries
 
 ## [0.0.10] - 2025-12-24
 

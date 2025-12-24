@@ -194,7 +194,7 @@ class LogseqCLIClient: @unchecked Sendable {
     }
 
     /// Resolve block references in task titles (e.g., [[uuid]] -> actual title)
-    private func resolveBlockReferencesInTitles(_ blocks: [LogseqBlock]) async throws -> [LogseqBlock] {
+    func resolveBlockReferencesInTitles(_ blocks: [LogseqBlock]) async throws -> [LogseqBlock] {
         print("DEBUG: ***** STARTING REFERENCE RESOLUTION *****")
         
         // Extract all UUIDs from task titles that need resolution

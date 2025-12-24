@@ -18,20 +18,25 @@ class QueryStorageService {
         }
     }
 
-    /// Load queries from UserDefaults, or populate with defaults if empty
+    /// Load queries from UserDefaults, regenerating defaults on each launch
     func loadQueries() -> [SavedQuery] {
         var queries: [SavedQuery] = []
 
+        // Load existing queries from UserDefaults
         if let data = defaults.data(forKey: queriesKey),
            let decoded = try? decoder.decode([SavedQuery].self, from: data) {
             queries = decoded
         }
 
-        // If empty, populate with defaults
-        if queries.isEmpty {
-            queries = defaultQueries()
-            saveQueries(queries)
-        }
+        // Remove old default queries (they'll be regenerated fresh from code)
+        queries.removeAll { $0.isDefault }
+
+        // Add current default queries at the front
+        let currentDefaults = defaultQueries()
+        queries.insert(contentsOf: currentDefaults, at: 0)
+
+        // Save updated list
+        saveQueries(queries)
 
         return queries
     }
@@ -87,18 +92,49 @@ class QueryStorageService {
             SavedQuery(
                 name: "DOING Tasks",
                 queryText: DatalogQueryBuilder.doingTasksQuery(),
-                isReadOnly: false
+                isReadOnly: false,
+                isDefault: true
             ),
             SavedQuery(
                 name: "TODO Tasks",
                 queryText: DatalogQueryBuilder.todoTasksWithPriorityQuery(),
-                isReadOnly: false
+                isReadOnly: false,
+                isDefault: true
             ),
             SavedQuery(
                 name: "High Priority",
                 queryText: DatalogQueryBuilder.highPriorityTasksQuery(),
-                isReadOnly: false
+                isReadOnly: false,
+                isDefault: true
             )
         ]
+    }
+
+    // MARK: - Migration
+
+    /// Migrate queries to new version system (one-time migration)
+    func migrateQueriesIfNeeded() {
+        let migrationKey = "queriesMigratedToV2"
+
+        if !defaults.bool(forKey: migrationKey) {
+            // This is first launch after update
+            // Clear everything to start fresh with new system
+            defaults.removeObject(forKey: queriesKey)
+            defaults.removeObject(forKey: lastUsedQueryIdKey)
+            defaults.set(true, forKey: migrationKey)
+            print("DEBUG: Migrated queries to new version system")
+        }
+    }
+
+    /// Reset all queries to defaults (clears custom queries)
+    func resetToDefaults() {
+        // Clear everything
+        defaults.removeObject(forKey: queriesKey)
+        defaults.removeObject(forKey: lastUsedQueryIdKey)
+
+        // Load queries (will regenerate defaults since storage is empty)
+        let _ = loadQueries()
+
+        print("DEBUG: Reset all queries to defaults")
     }
 }
