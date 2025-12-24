@@ -12,37 +12,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Current State
 - ✅ Query Manager with saved queries and double-click execution
-- ✅ All Tasks query performance fixed (Datalog-level limiting)
+- ✅ All Tasks query performance fixed (status filtering)
 - ✅ Query Manager window floats on top
 - ✅ Live DOING query working with real data
 - ✅ Timestamp conversion working (dates display correctly)
 - ✅ Loading/error/empty states implemented
 - ✅ Query execution framework in place
 
-## [0.0.8] - 2025-12-24
+## [0.0.9] - 2025-12-24
 
 ### Fixed
-- 🐛 **CRITICAL**: Fixed All Tasks query hanging by adding `:limit 51` to Datalog query
-- 🐛 Query now limits at DATABASE level instead of application level
-- 🐛 Logseq CLI no longer processes hundreds of tasks before returning results
+- 🐛 **CRITICAL**: Fixed All Tasks query by filtering out Done/Cancelled tasks
+- 🐛 Reverted invalid `:limit` clause (Datalog doesn't support this syntax)
+- 🐛 Query now excludes completed tasks, dramatically reducing result set
 
 ### Changed
-- 🔧 Updated Query Manager version to v0.0.2
-- 🔧 `allTasksQuery()` now includes `:limit 51` clause in Datalog query
-- 🔧 Query fetches 51 results to detect if more exist, displays 50
+- 🔧 Updated Query Manager version to v0.0.3
+- 🔧 Renamed "All Tasks" to focus on ACTIVE tasks (excludes Done/Cancelled)
+- 🔧 Added valid Datalog filters: `[(not= ?status-name "Done")]` and `[(not= ?status-name "Cancelled")]`
 
 ### Technical Details
-- **Root Cause**: Logseq CLI was fetching ALL tasks (hundreds) from database before returning
-- **Previous Fix (v0.0.7)**: Attempted to limit at Swift level AFTER CLI returned (didn't work)
-- **Correct Fix (v0.0.8)**: Added `:limit 51` to Datalog query itself
-- **Query Flow Now**:
-  1. Datalog query limited to 51 results at database level
-  2. Swift receives max 51 results quickly
-  3. If 51 results received, display 50 and show "more results" notice
-  4. Block reference resolution only processes displayed results
+- **Root Cause Identified**: "All Tasks" was fetching ALL statuses including Done/Cancelled (hundreds/thousands)
+- **Why v0.0.8 Failed**: Datalog (Datascript) does NOT support `:limit` inside queries - invalid syntax
+- **Lesson Learned**: ALWAYS test Datalog queries in CLI before incorporating in code
+- **Correct Approach**: Filter at query level using valid Datalog predicates
+- **Query Pattern**: DOING works because it filters to one status - All Tasks needed similar filtering
+- **Result**: Now fetches only active tasks (Todo, Doing, Waiting, etc.) not completed ones
 
 ### Breaking Changes
-- None - performance fix only
+- "All Tasks" query now excludes Done/Cancelled tasks (renamed to "Active Tasks" conceptually)
+
+## [0.0.8] - 2025-12-24 [REVERTED - Invalid Datalog syntax]
+
+### Attempted Fix (Did Not Work)
+- ❌ Tried to add `:limit 51` to Datalog query
+- ❌ Datalog/Datascript does NOT support `:limit` clause in query syntax
+- ❌ This was invalid syntax and would cause query errors
+
+### Lesson Learned
+- Must test Datalog queries in CLI before incorporating into code
+- Datalog limits must be applied in application layer, not query layer
 
 ## [0.0.7] - 2025-12-24
 

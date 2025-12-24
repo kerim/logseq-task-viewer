@@ -30,7 +30,7 @@ class DatalogQueryBuilder {
         """
     }
 
-    /// Build query for all tasks with status (limited to 51 to detect if more exist)
+    /// Build query for active tasks (non-Done/Cancelled) - more focused than "all"
     static func allTasksQuery() -> String {
         return """
         [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
@@ -39,7 +39,8 @@ class DatalogQueryBuilder {
             [?t :block/title "Task"]
             [?b :logseq.property/status ?s]
             [?s :block/title ?status-name]
-        :limit 51]
+            [(not= ?status-name "Done")]
+            [(not= ?status-name "Cancelled")]]
         """
     }
 
