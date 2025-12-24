@@ -10,24 +10,25 @@ struct TaskListView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        print("DEBUG: TaskListView created with ViewModel: \(ObjectIdentifier(viewModel))")
+        return VStack(alignment: .leading, spacing: 0) {
             // Header with settings button
             HStack {
-                Text("DOING Tasks")
+                Text("\(viewModel.currentQueryType) Tasks")
                     .font(.headline)
                     .foregroundColor(.secondary)
                 
                 Spacer()
                 
                 Button(action: {
-                    viewModel.toggleSettings()
+                    viewModel.openQueryManager()
                 }) {
-                    Image(systemName: "gear")
+                    Image(systemName: "slider.horizontal.3")
                         .font(.headline)
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(PlainButtonStyle())
-                .help("Settings")
+                .help("Query Manager")
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
@@ -35,11 +36,11 @@ struct TaskListView: View {
             
             // Task list
             if viewModel.isLoading {
-                LoadingView()
+                LoadingView(queryType: viewModel.currentQueryType)
             } else if let errorMessage = viewModel.errorMessage {
                 ErrorView(message: errorMessage)
             } else if viewModel.tasks.isEmpty {
-                EmptyTaskView()
+                EmptyTaskView(queryType: viewModel.currentQueryType)
             } else {
                 ScrollView {
                     VStack(spacing: 0) {
@@ -58,28 +59,40 @@ struct TaskListView: View {
             }
             
             // Footer
-            Text("Total: \(viewModel.tasks.count) tasks")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Total: \(viewModel.tasks.count) tasks")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                if viewModel.hasMoreResults {
+                    Text("Showing first 50 results. More tasks available in Logseq.")
+                        .font(.caption2)
+                        .foregroundColor(.orange)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
         }
         .background(Color(.windowBackgroundColor))
-        .sheet(isPresented: $viewModel.showingSettings) {
-            SettingsView(viewModel: viewModel, isPresented: $viewModel.showingSettings)
-        }
     }
 }
 
 /// View for when no tasks are found
 struct EmptyTaskView: View {
+    let queryType: String
+    
+    init(queryType: String) {
+        self.queryType = queryType
+        print("DEBUG: EmptyTaskView created with queryType: \(queryType)")
+    }
+    
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "checkmark.circle")
                 .font(.system(size: 48))
                 .foregroundColor(.gray)
             
-            Text("No DOING tasks found")
+            Text("No \(queryType) tasks found")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
@@ -94,13 +107,20 @@ struct EmptyTaskView: View {
 
 /// View for when data is loading
 struct LoadingView: View {
+    let queryType: String
+    
+    init(queryType: String) {
+        self.queryType = queryType
+        print("DEBUG: LoadingView created with queryType: \(queryType)")
+    }
+    
     var body: some View {
         VStack(spacing: 16) {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .blue))
                 .scaleEffect(1.5)
             
-            Text("Loading DOING tasks...")
+            Text("Loading \(queryType) tasks...")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
@@ -135,127 +155,6 @@ struct ErrorView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
-    }
-}
-
-/// Settings view for custom datalog queries
-struct SettingsView: View {
-    @ObservedObject var viewModel: TaskViewModel
-    @Binding var isPresented: Bool
-    
-    // Sample queries for quick selection
-    private let sampleQueries = [
-        ("DOING Tasks", DatalogQueryBuilder.doingTasksQuery()),
-        ("TODO Tasks", DatalogQueryBuilder.todoTasksQuery()),
-        ("All Tasks", DatalogQueryBuilder.allTasksQuery()),
-        ("High Priority", DatalogQueryBuilder.highPriorityTasksQuery())
-    ]
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            // Header
-            HStack {
-                Text("Query Settings")
-                    .font(.headline)
-                
-                Spacer()
-                
-                Button(action: {
-                    isPresented = false
-                }) {
-                    Image(systemName: "xmark")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                }
-                .buttonStyle(PlainButtonStyle())
-            }
-            
-            // Sample queries
-            Text("Sample Queries")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            ScrollView {
-                VStack(spacing: 8) {
-                    ForEach(0..<sampleQueries.count, id: \.self) { index in
-                        let (name, query) = sampleQueries[index]
-                        Button(action: {
-                            viewModel.customQuery = query
-                        }) {
-                            HStack {
-                                Text(name)
-                                    .font(.body)
-                                Spacer()
-                                if viewModel.customQuery == query {
-                                    Image(systemName: "checkmark")
-                                        .foregroundColor(.blue)
-                                }
-                            }
-                            .padding(10)
-                            .background(
-                                viewModel.customQuery == query ?
-                                    Color.blue.opacity(0.1) :
-                                    Color.clear
-                            )
-                            .cornerRadius(6)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                }
-            }
-            .frame(height: 120)
-            
-            // Custom query editor
-            Text("Custom Query")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            TextEditor(text: $viewModel.customQuery)
-                .font(.body)
-                .frame(height: 150)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                )
-                .padding(.vertical, 4)
-            
-            // Action buttons
-            HStack(spacing: 16) {
-                Button(action: {
-                    isPresented = false
-                    viewModel.customQuery = ""
-                }) {
-                    Text("Cancel")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(PlainButtonStyle())
-                
-                Button(action: {
-                    isPresented = false
-                    Task {
-                        await viewModel.executeCustomQuery(viewModel.customQuery)
-                    }
-                }) {
-                    Text("Run Query")
-                        .font(.body)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(PlainButtonStyle())
-                .background(Color.blue)
-                .cornerRadius(8)
-                .disabled(viewModel.customQuery.isEmpty)
-            }
-            .frame(height: 40)
-        }
-        .padding(16)
-        .frame(width: 350, height: 450)
-        .background(Color(.windowBackgroundColor))
-        .shadow(radius: 10)
     }
 }
 
@@ -550,6 +449,7 @@ struct TaskListView_Previews: PreviewProvider {
             LogseqBlock(uuid: "692a5166-51dd-420e-8b97-4bdae021dc11", content: "[[revise HTTL manuscript]]"),
             LogseqBlock(uuid: "68f48c61-41f6-4ff1-a612-ea7338ebbbeb", content: "Watch [[TIEFF 2025]] Films that I haven't seen yet")
         ]
+        viewModel.currentQueryType = "DOING"
         
         return TaskListView(viewModel: viewModel)
             .frame(width: 300, height: 500)

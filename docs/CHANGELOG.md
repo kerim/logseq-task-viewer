@@ -8,27 +8,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Known Issues (To Be Fixed)
-- ⚠️ Double-click issue: First click brings window to front, second click registers
-- ⚠️ Link resolution in custom queries: Links show UUIDs instead of resolved references
-- ⚠️ TODO query performance: Sample query returns too many tasks
-- ⚠️ Loading text: Still says "Loading DOING..." regardless of query type
+- None currently identified
 
 ### Current State
+- ✅ Query Manager with saved queries and double-click execution
+- ✅ All Tasks query performance fixed (result limiting)
+- ✅ Query Manager window floats on top
 - ✅ Live DOING query working with real data
 - ✅ Timestamp conversion working (dates display correctly)
-- ✅ Settings UI with sample queries and custom query editor
-- ✅ Dynamic title working for success states
 - ✅ Loading/error/empty states implemented
 - ✅ Query execution framework in place
+
+## [0.0.7] - 2025-12-24
+
+### Fixed
+- 🐛 **CRITICAL**: Fixed All Tasks query hanging by limiting results BEFORE block reference resolution
+- 🐛 Fixed double-click functionality in Query Manager (broken by concurrent execution issue)
+- 🐛 Fixed Query Manager window not coming to front when opened
+- 🐛 Performance: Block reference resolution now only processes displayed results (max 50) instead of all results
+
+### Added
+- ✅ Version number (v0.0.1) displayed in Query Manager window footer
+- ✅ Query Manager window now floats on top of other windows
+- ✅ "More results" notice when result count exceeds 50 tasks
+- ✅ Debug logging for result limiting
+
+### Changed
+- 🔧 Result limiting now happens before expensive block reference resolution
+- 🔧 Query Manager window level set to `.floating` for better visibility
+- 🔧 Query Manager collection behavior set to join all spaces
+
+### Technical Details
+- **Performance Fix**: Changed order of operations in `executeCustomQuery()`:
+  1. Execute query → Get all results
+  2. **Limit to 50 results** (new step)
+  3. Resolve block references (only for 50 results, not hundreds)
+  4. Display tasks
+- **Window Behavior**: Query Manager now uses `.floating` level and `.canJoinAllSpaces` behavior
+- **User Experience**: Orange notice displays when more than 50 results available
+- **Version Tracking**: Query Manager component version displayed for debugging
+
+### Breaking Changes
+- None - performance improvements and bug fixes only
 
 ## [0.0.6] - 2025-12-18
 
 ### Added
 - ✅ Settings UI for custom datalog queries
-- ✅ Sample query selection (DOING, TODO, All Tasks, High Priority)
+- ✅ Sample query selection (DOING, TODO, All Tasks, High Priority, Comprehensive TODO)
 - ✅ Custom query editor with syntax highlighting
 - ✅ Query execution functionality for custom queries
 - ✅ Settings access via gear icon in main UI
+- ✅ Comprehensive TODO query supporting class-based task inheritance
 
 ### Changed
 - 🔧 Extended TaskViewModel with custom query execution methods
@@ -45,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Query Execution**: Async execution of custom datalog queries
 - **Sample Queries**: Predefined queries for common task filtering scenarios
 - **User Experience**: Intuitive interface for query management and execution
+- **Comprehensive TODO Query**: Advanced query supporting both direct task tags and class-based task inheritance using `or-join`
 
 ### Known Limitations
 - ⚠️ Still using hardcoded graph name in configuration
