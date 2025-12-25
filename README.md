@@ -1,175 +1,95 @@
 # Logseq Task Viewer
 
-A macOS menu bar application for viewing and managing Logseq tasks.
+A macOS menu bar application for viewing and managing tasks from Logseq DB graphs.
 
-## 🎉 Current Status: Version 0.0.1 Released!
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Platform](https://img.shields.io/badge/platform-macOS%2013.0%2B-lightgrey)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-**First Functional Version** - Successfully displays DOING tasks with actual content
+## 📥 Installation
 
-## 📋 Quick Start
+### Option 1: Download Pre-Built App (Recommended)
 
-### Prerequisites
-- macOS 13.0+
-- Xcode 15+
-- Logseq CLI installed (`brew install logseq`)
-- Jet CLI for EDN conversion (`brew install jet`)
+1. Download `LogseqTaskViewer.app.zip` from [Releases](https://github.com/kerim/logseq-task-viewer/releases/latest)
+2. Unzip and move to Applications folder
+3. **First launch:** Right-click → Open (to bypass Gatekeeper)
+4. Install dependencies (see Requirements below)
 
-### Building
+### Option 2: Build from Source
+
 ```bash
-xcodebuild -project LogseqTaskViewer.xcodeproj -scheme LogseqTaskViewer
+git clone https://github.com/kerim/logseq-task-viewer.git
+cd logseq-task-viewer
+xcodebuild -scheme LogseqTaskViewer -configuration Release build
 ```
 
-### Running
+Built app will be in: `build/Release/LogseqTaskViewer.app`
+
+## 📋 Requirements
+
+**System:**
+- macOS 13.0 or later
+
+**Dependencies** (install via Homebrew):
 ```bash
-open -a Xcode LogseqTaskViewer.xcodeproj
-# Then run from Xcode
+brew install logseq  # Logseq CLI
+brew install jet     # EDN/JSON converter
 ```
 
-## ✨ Features (Version 0.0.1)
+**Logseq Setup:**
+- Must use **DB graph** (database-based, not file/markdown)
+- Tasks must have `#Task` tag
+- Supports status: Todo, Doing, Done, Cancelled
+- Supports priority: Urgent, High, Medium, Low
 
-### Working Functionality
-- ✅ Query Logseq for DOING tasks
-- ✅ Display task UUIDs and content
-- ✅ Resolve status names to human-readable format
-- ✅ Proper data decoding for complex results
-- ✅ Console output of task information
+## ✨ Features
 
-### Sample Output
-```
-Found 3 DOING tasks
-Task 1: "1st December [[68301217-1a99-4d9b-a2f8-e8756851ec28]] post"
-Task 2: "[[692a5173-3bb9-49fa-85d2-c74ba89ea796]]"
-Task 3: "Watch [[68f48c70-c9cf-4960-89b1-853802050a5f]] Films that I haven't seen yet"
-```
+- 🎯 **Menu Bar Integration** - Quick access from macOS menu bar
+- 📋 **Multiple Queries** - DOING, TODO, High Priority (default)
+- 🔍 **Custom Queries** - Create and save your own Datalog queries
+- 🎨 **Priority Display** - Color-coded icons (Urgent=🔴, High=🟠, Medium=🟡, Low=🔵)
+- 📅 **Date Conversion** - Timestamps shown as readable dates
+- 💾 **Query Persistence** - Saved queries persist across launches
+- 🔄 **Graph Switching** - Select between multiple Logseq databases
+- ⚡ **Query Manager** - Double-click to execute, easy editing
 
-## 🚀 Roadmap
+## 🚀 Quick Start
 
-### Version 0.0.1 (Current) - "Basic DOING Tasks Display"
-- ✅ Functional DOING tasks query
-- ✅ Proper data decoding
-- ✅ Console display
-- ✅ Status resolution
+1. **Install dependencies** (see Requirements)
+2. **Launch app** - Find checkmark icon in menu bar
+3. **Select graph** - Open Query Manager → Choose your Logseq database
+4. **View tasks** - Click menu bar icon to see current query results
+5. **Switch queries** - Open Query Manager → Double-click different query
 
-### Version 0.0.2 (Next) - "Complete Task Display"
-- 🔜 Actual UI implementation
-- 🔜 All status types support
-- 🔜 Error handling
-- 🔜 Basic user interaction
+## 📖 Documentation
 
-### Future Versions
-- Task filtering and search
-- Task creation/editing
-- Multiple graph support
-- Priority and date display
-- Advanced filtering options
+- [CHANGELOG.md](docs/CHANGELOG.md) - Version history
+- [DEVELOPMENT_REPORT.md](docs/DEVELOPMENT_REPORT.md) - Development journey
+- [QUERY_UPDATE_SUMMARY.md](docs/QUERY_UPDATE_SUMMARY.md) - Query implementation details
 
-## 📚 Documentation
+## 🐛 Known Issues
 
-### Development Reports
-- [`docs/DEVELOPMENT_REPORT.md`](docs/DEVELOPMENT_REPORT.md) - Comprehensive development journey
-- [`docs/CHANGELOG.md`](docs/CHANGELOG.md) - Version history and changes
-- [`docs/VERSION_0.0.1_SUMMARY.md`](docs/VERSION_0.0.1_SUMMARY.md) - Current version details
-
-### Technical Documentation
-- Query structure and patterns
-- Data model insights
-- Development lessons learned
-- Future architecture plans
-
-## 🧪 Testing
-
-### Test Infrastructure
-- 20+ comprehensive test scripts
-- Query functionality verification
-- Data decoding validation
-- Integration testing
-
-### Running Tests
-```bash
-./tests/test_final_integration.sh  # Complete test suite
-./tests/test_doing_tasks.sh       # DOING tasks specifically
-./tests/test_app_decoding.sh      # Decoding verification
-```
-
-## 🔧 Technical Details
-
-### Architecture
-- **Language**: Swift 6 with strict concurrency
-- **Platform**: macOS 13.0+ menu bar application
-- **UI Framework**: SwiftUI views in AppKit (NSPopover)
-- **Data Source**: Logseq CLI with EDN/JSON conversion
-
-### Key Components
-- `DatalogQueryBuilder` - Query construction
-- `LogseqCLIClient` - CLI execution and data processing
-- `LogseqBlock`/`LogseqTask` - Data models
-- `AppDelegate` - Application lifecycle
-
-### Query Structure
-```clojure
-[:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties]) ?status-name
- :where
-   [?b :block/tags ?t]
-   [?t :block/title "Task"]
-   [?b :logseq.property/status ?s]
-   [?s :block/title ?status-name]
-   [(= ?status-name "Doing")]]
-```
-
-## 📈 Project Metrics
-
-### Version 0.0.1
-- **Files**: 55 files
-- **Lines of Code**: 5,401
-- **Test Scripts**: 20+
-- **Documentation**: 3 comprehensive documents
-- **Development Time**: ~9 hours
+- Link resolution in custom queries (workaround: use block references)
+- Loading text always shows "DOING" (cosmetic issue)
 
 ## 🤝 Contributing
 
-### Getting Started
-1. Clone the repository
-2. Install prerequisites
-3. Build and run
-4. Check existing tests
-5. Implement new features
-
-### Development Guidelines
-- Follow existing code patterns
-- Add comprehensive tests
-- Document changes in CHANGELOG.md
-- Update documentation as needed
-- Use semantic versioning
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## 📝 License
 
-This project is currently proprietary. License information will be added in future versions.
+MIT License - see [LICENSE](LICENSE) file for details
 
-## 🔗 Contact
+## 🙏 Acknowledgments
 
-For questions or issues, please refer to the documentation or open an issue in the repository.
+- Built for the Logseq community
+- Uses Logseq CLI and Jet for data processing
+- Inspired by other Logseq productivity tools
 
-## 🎉 Achievements
+## 📧 Contact
 
-### Version 0.0.1 Milestones
-- ✅ Fixed core issue (no task content displayed)
-- ✅ Established proper query patterns
-- ✅ Created comprehensive testing
-- ✅ Documented development process
-- ✅ Set up version tracking
-
-### Key Learnings
-- Logseq data model insights
-- Datalog query patterns
-- Swift decoding techniques
-- Development process improvements
-
-## 🚀 Next Steps
-
-The foundation is solid! Version 0.0.2 will focus on:
-1. Building the actual UI
-2. Supporting all task statuses
-3. Adding user interaction
-4. Implementing error handling
-
-**From here, we build upwards!** 🚀
+For questions or issues, please [open an issue](https://github.com/kerim/logseq-task-viewer/issues) on GitHub.

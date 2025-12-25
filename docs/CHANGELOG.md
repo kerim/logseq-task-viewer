@@ -7,21 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Known Issues (To Be Fixed)
-- None currently identified
+### Known Issues
+- Link resolution in custom queries (workaround: use block references)
+- Loading text always shows "DOING" (cosmetic issue)
 
-### Current State
-- ✅ Graph selection UI (dropdown in Query Manager)
-- ✅ Query Manager with saved queries and double-click execution
-- ✅ Default queries: DOING, TODO, High Priority (regenerate automatically)
-- ✅ Query Manager window floats on top
-- ✅ Live DOING query working with real data
-- ✅ Timestamp conversion working (dates display correctly)
-- ✅ Loading/error/empty states implemented
-- ✅ Query execution framework in place
-- ✅ User-created queries persist across launches
-- ✅ Reset to defaults safety mechanism
-- ✅ Priority query updated for DB graphs (High/Urgent)
+## [1.0.0] - 2025-12-25
+
+### First Public Release 🎉
+
+**Repository:** https://github.com/kerim/logseq-task-viewer
+
+This is the first public release of Logseq Task Viewer - a macOS menu bar application for viewing and managing tasks from Logseq DB graphs.
+
+### Features
+- ✅ **Menu Bar Integration** - Quick access from macOS menu bar
+- ✅ **Query Manager** - Saved queries with double-click execution and live editing
+- ✅ **Graph Selection UI** - Dropdown to select which Logseq database to query
+- ✅ **Default Queries** - DOING, TODO, High Priority (regenerate automatically)
+- ✅ **Custom Queries** - Create and save your own Datalog queries
+- ✅ **Priority Display** - Color-coded icons for Urgent, High, Medium, Low priorities
+- ✅ **Timestamp Conversion** - Logseq timestamps shown as readable dates
+- ✅ **Loading/Error States** - Proper UI feedback during operations
+- ✅ **Query Persistence** - User-created queries persist across launches
+- ✅ **Reset to Defaults** - Safety mechanism to restore default queries
+- ✅ **Window Focus** - Query Manager window floats on top for easy access
+
+### Requirements
+- macOS 13.0+
+- Logseq CLI (`brew install logseq`)
+- Jet CLI (`brew install jet`)
+- Logseq DB graph (not file-based)
+
+### Installation
+- Download pre-built app from GitHub Releases
+- Or build from source using Xcode 15+
+
+### License
+- MIT License
 
 ## [0.0.12] - 2025-12-24
 
