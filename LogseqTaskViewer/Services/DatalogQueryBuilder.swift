@@ -13,8 +13,8 @@ class DatalogQueryBuilder {
             :block/properties
             :block/page
             {:block/page [:block/title :block/name]}
-            :logseq.property/status
-            :logseq.property/priority
+            {:logseq.property/status [:block/title]}
+            {:logseq.property/priority [:block/title :block/name]}
             :logseq.property/scheduled
             :logseq.property/deadline
         ]) ?status-name
@@ -33,7 +33,7 @@ class DatalogQueryBuilder {
     /// Build query for active tasks (non-Done/Cancelled) - more focused than "all"
     static func allTasksQuery() -> String {
         return """
-        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties {:logseq.property/status [:block/title]} {:logseq.property/priority [:block/title :block/name]} :logseq.property/scheduled :logseq.property/deadline]) ?status-name
         :where
             [?b :block/tags ?t]
             [?t :block/title "Task"]
@@ -90,7 +90,7 @@ class DatalogQueryBuilder {
     /// Query for tasks with "doing" status only
     static func doingTasksQuery() -> String {
         return """
-        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties {:logseq.property/status [:block/title]} {:logseq.property/priority [:block/title :block/name]} :logseq.property/scheduled :logseq.property/deadline]) ?status-name
         :where
             [?b :block/tags ?t]
             [?t :block/title "Task"]
@@ -103,7 +103,7 @@ class DatalogQueryBuilder {
     /// Query for tasks with "Todo" status only (note: capital T, not TODO)
     static func todoTasksQuery() -> String {
         return """
-        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties {:logseq.property/status [:block/title]} {:logseq.property/priority [:block/title :block/name]} :logseq.property/scheduled :logseq.property/deadline]) ?status-name
         :where
             [?b :block/tags ?t]
             [?t :block/title "Task"]
@@ -116,7 +116,7 @@ class DatalogQueryBuilder {
     /// Query for TODO tasks with priority only (for performance)
     static func todoTasksWithPriorityQuery() -> String {
         return """
-        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties {:logseq.property/status [:block/title]} {:logseq.property/priority [:block/title :block/name]} :logseq.property/scheduled :logseq.property/deadline]) ?status-name
         :where
             [?b :block/tags ?t]
             [?t :block/title "Task"]
@@ -142,7 +142,7 @@ class DatalogQueryBuilder {
     /// Query for all TODO tasks (fallback when priority query returns empty)
     static func allTodoTasksQuery() -> String {
         return """
-        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline]) ?status-name
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties {:logseq.property/status [:block/title]} {:logseq.property/priority [:block/title :block/name]} :logseq.property/scheduled :logseq.property/deadline]) ?status-name
         :where
             [?b :block/tags ?t]
             [?t :block/title "Task"]
@@ -152,15 +152,21 @@ class DatalogQueryBuilder {
         """
     }
 
-    /// Query for high priority tasks (priority A)
+    /// Query for high priority tasks (High and Urgent priorities for DB graphs, excluding Done/Cancelled)
     static func highPriorityTasksQuery() -> String {
         return """
-        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties :logseq.property/status :logseq.property/priority :logseq.property/scheduled :logseq.property/deadline])
+        [:find (pull ?b [:block/uuid :block/title :block/content :block/tags :block/properties {:logseq.property/status [:block/title]} {:logseq.property/priority [:block/title :block/name]} :logseq.property/scheduled :logseq.property/deadline])
         :where
             [?b :block/tags ?t]
             [?t :block/title "Task"]
+            [?b :logseq.property/status ?s]
+            [?s :block/title ?status-name]
+            [(not= ?status-name "Done")]
+            [(not= ?status-name "Cancelled")]
             [?b :logseq.property/priority ?p]
-            [?p :block/title "A"]]
+            (or-join [?b ?p]
+                (and [?p :block/title "High"])
+                (and [?p :block/title "Urgent"]))]
         """
     }
 
@@ -175,8 +181,8 @@ class DatalogQueryBuilder {
             :block/content
             :block/tags
             :block/properties
-            :logseq.property/status
-            :logseq.property/priority
+            {:logseq.property/status [:block/title]}
+            {:logseq.property/priority [:block/title :block/name]}
             :logseq.property/scheduled
             :logseq.property/deadline
         ])

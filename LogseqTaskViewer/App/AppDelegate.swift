@@ -25,7 +25,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover?.contentSize = NSSize(width: 400, height: 600)
         popover?.behavior = .transient
 
+        // Listen for graph changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleGraphChanged(_:)),
+            name: Notification.Name("GraphChanged"),
+            object: nil
+        )
+
         // Initialize view model and load cached data for immediate UI
+        initializeViewModel()
+    }
+
+    @objc func handleGraphChanged(_ notification: Notification) {
+        // Reinitialize view model with new graph
+        print("DEBUG: Graph changed, reinitializing ViewModel")
         initializeViewModel()
     }
 
@@ -103,15 +117,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func initializeViewModel() {
+        // Read selected graph from UserDefaults
+        let selectedGraph = UserDefaults.standard.string(forKey: "selectedGraph") ?? ""
+
+        guard !selectedGraph.isEmpty else {
+            // No graph selected - show alert
+            DispatchQueue.main.async {
+                let alert = NSAlert()
+                alert.messageText = "No Graph Selected"
+                alert.informativeText = "Please select a Logseq graph from the Query Manager."
+                alert.alertStyle = .warning
+                alert.addButton(withTitle: "OK")
+                alert.runModal()
+            }
+            return
+        }
+
         let config = CLIConfig(
-            graphName: "LSEQ 2025-12-15",
+            graphName: selectedGraph,
             logseqCLIPath: "/opt/homebrew/bin/logseq",
             jetCLIPath: "/opt/homebrew/bin/jet"
         )
 
         let client = LogseqCLIClient(config: config)
-        // Store the graph name in UserDefaults so URL generation can access it
-        UserDefaults.standard.set(config.graphName, forKey: "selectedGraph")
         viewModel = TaskViewModel(client: client)
         print("DEBUG: AppDelegate created ViewModel: \(ObjectIdentifier(viewModel as AnyObject))")
 

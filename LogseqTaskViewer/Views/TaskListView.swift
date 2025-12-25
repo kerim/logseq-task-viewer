@@ -346,7 +346,7 @@ struct TaskItemView: View {
     // Helper function to get priority display
     private func priorityDisplay() -> String? {
         if let priorityRef = task.priority {
-            return priorityRef.name ?? priorityRef.title
+            return priorityRef.title ?? priorityRef.name  // Prefer title (capitalized) over name
         }
         return nil
     }
@@ -371,15 +371,17 @@ struct TaskItemView: View {
             
             // Task properties and metadata
             HStack(spacing: 8) {
-                // Priority icon (using SF Symbols)
+                // Priority icon (using SF Symbols) - DB graph priorities
                 if let priority = priorityDisplay() {
-                    let priorityIcon = priority == "A" ? "exclamationmark.2" :
-                                      priority == "B" ? "exclamationmark" :
-                                      "exclamationmark.3"
-                    let priorityColor = priority == "A" ? Color.red :
-                                      priority == "B" ? Color.orange :
-                                      Color.yellow
-                    
+                    let priorityIcon = priority == "Urgent" ? "exclamationmark.3" :
+                                      priority == "High" ? "exclamationmark.2" :
+                                      priority == "Medium" ? "exclamationmark" :
+                                      "arrow.down"
+                    let priorityColor = priority == "Urgent" ? Color.red :
+                                      priority == "High" ? Color.orange :
+                                      priority == "Medium" ? Color.yellow :
+                                      Color.blue
+
                     Image(systemName: priorityIcon)
                         .font(.caption)
                         .foregroundColor(priorityColor)

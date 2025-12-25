@@ -16,7 +16,7 @@ class TaskViewModel: ObservableObject {
 
     private let maxDisplayResults = 50
 
-    private nonisolated let client: LogseqCLIClient
+    nonisolated let client: LogseqCLIClient  // Made accessible for graph selection
     private var cancellables = Set<AnyCancellable>()
     
     init(client: LogseqCLIClient) {

@@ -14,6 +14,8 @@ struct QueryManagerView: View {
     @State private var isPreviewLoading = false
     @State private var previewError: String?
     @State private var isLoadingQuery = false
+    @State private var availableGraphs: [String] = []
+    @State private var selectedGraph: String = ""
 
     var selectedQuery: SavedQuery? {
         queryManager.queries.first { $0.id == selectedQueryId }
@@ -31,6 +33,43 @@ struct QueryManagerView: View {
         }
         .frame(minWidth: 600, minHeight: 400)
         .onAppear {
+            // Load available graphs
+            Task {
+                print("DEBUG: Loading available graphs...")
+                do {
+                    // Create a temporary client just for listing graphs (doesn't need a graph name)
+                    let tempConfig = CLIConfig(
+                        graphName: "temp",  // Dummy name just to pass validation
+                        logseqCLIPath: "/opt/homebrew/bin/logseq",
+                        jetCLIPath: "/opt/homebrew/bin/jet"
+                    )
+                    let tempClient = LogseqCLIClient(config: tempConfig)
+                    let graphs = try await tempClient.listGraphs()
+                    print("DEBUG: Loaded graphs: \(graphs)")
+                    await MainActor.run {
+                        availableGraphs = graphs
+                        print("DEBUG: Set availableGraphs to: \(availableGraphs)")
+                    }
+
+                    // Load saved graph or use first available
+                    if let saved = UserDefaults.standard.string(forKey: "selectedGraph"),
+                       graphs.contains(saved) {
+                        await MainActor.run {
+                            selectedGraph = saved
+                            print("DEBUG: Set selectedGraph to saved: \(saved)")
+                        }
+                    } else if let first = graphs.first {
+                        await MainActor.run {
+                            selectedGraph = first
+                            print("DEBUG: Set selectedGraph to first: \(first)")
+                        }
+                        UserDefaults.standard.set(first, forKey: "selectedGraph")
+                    }
+                } catch {
+                    print("ERROR: Failed to load graphs: \(error)")
+                }
+            }
+
             // Select first query on load
             if let firstQuery = queryManager.queries.first {
                 selectedQueryId = firstQuery.id
@@ -68,30 +107,66 @@ struct QueryManagerView: View {
 
     private var queryListPane: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header
-            HStack {
-                Text("Saved Queries")
-                    .font(.headline)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
+            // Header with graph selector
+            VStack(alignment: .leading, spacing: 4) {
+                // Graph selector row
+                HStack {
+                    Text("Graph:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
 
-                Spacer()
-
-                Button(action: { showingResetConfirmation = true }) {
-                    Image(systemName: "arrow.counterclockwise")
-                        .font(.subheadline)
+                    Picker("", selection: $selectedGraph) {
+                        if availableGraphs.isEmpty {
+                            Text("Loading...").tag("")
+                        } else {
+                            ForEach(availableGraphs, id: \.self) { graph in
+                                Text(graph).tag(graph)
+                            }
+                        }
+                    }
+                    .labelsHidden()
+                    .frame(maxWidth: .infinity)
+                    .onChange(of: selectedGraph) { newGraph in
+                        if !newGraph.isEmpty {
+                            UserDefaults.standard.set(newGraph, forKey: "selectedGraph")
+                            // Notify AppDelegate to update config
+                            NotificationCenter.default.post(
+                                name: Notification.Name("GraphChanged"),
+                                object: newGraph
+                            )
+                        }
+                    }
                 }
-                .buttonStyle(PlainButtonStyle())
-                .padding(.trailing, 4)
-                .help("Reset to default queries")
+                .padding(.horizontal, 12)
+                .padding(.top, 8)
 
-                Button(action: createNewQuery) {
-                    Image(systemName: "plus")
-                        .font(.subheadline)
+                Divider()
+
+                // Queries header row
+                HStack {
+                    Text("Saved Queries")
+                        .font(.headline)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+
+                    Spacer()
+
+                    Button(action: { showingResetConfirmation = true }) {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.subheadline)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.trailing, 4)
+                    .help("Reset to default queries")
+
+                    Button(action: createNewQuery) {
+                        Image(systemName: "plus")
+                            .font(.subheadline)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .padding(.trailing, 8)
+                    .help("Create new query")
                 }
-                .buttonStyle(PlainButtonStyle())
-                .padding(.trailing, 8)
-                .help("Create new query")
             }
             .background(Color(NSColor.controlBackgroundColor))
 

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - None currently identified
 
 ### Current State
+- ✅ Graph selection UI (dropdown in Query Manager)
 - ✅ Query Manager with saved queries and double-click execution
 - ✅ Default queries: DOING, TODO, High Priority (regenerate automatically)
 - ✅ Query Manager window floats on top
@@ -20,6 +21,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Query execution framework in place
 - ✅ User-created queries persist across launches
 - ✅ Reset to defaults safety mechanism
+- ✅ Priority query updated for DB graphs (High/Urgent)
+
+## [0.0.12] - 2025-12-24
+
+### Added
+- ✅ **Graph Selection UI** in Query Manager
+- ✅ Dropdown to select which Logseq database to query
+- ✅ Auto-discovery of available graphs using CLI
+- ✅ Selected graph persists in UserDefaults
+- ✅ Graph changes update app immediately via NotificationCenter
+
+### Fixed
+- 🐛 **CRITICAL**: Fixed High Priority query for DB graphs
+- 🐛 Changed from "A" (Markdown priority) to "High" and "Urgent" (DB graph priorities)
+- 🐛 Query now correctly filters High and Urgent priority tasks
+
+### Changed
+- 🔧 Graph name no longer hardcoded in AppDelegate
+- 🔧 Graph selection available in Query Manager header
+- 🔧 App shows alert if no graph selected on first launch
+- 🔧 ViewModel client made accessible for graph discovery
+
+### Technical Details
+- **Graph Selection Pattern**: Based on logseq-sidekick and raycast-logseq-search
+- **Storage**: UserDefaults with key "selectedGraph"
+- **Discovery**: LogseqCLIClient.listGraphs() via `logseq list` command
+- **UI Location**: Query Manager header (above saved queries list)
+- **Notification**: GraphChanged notification triggers ViewModel reinitialization
+- **Priority Query**: Uses `or` clause to match both "High" and "Urgent" priority values
+- **Files Modified**:
+  - DatalogQueryBuilder.swift: Updated highPriorityTasksQuery()
+  - QueryManagerView.swift: Added graph selector dropdown
+  - AppDelegate.swift: Read selected graph from UserDefaults, added NotificationCenter listener
+  - TaskViewModel.swift: Made client accessible
+
+### Breaking Changes
+- Graph must be selected on first launch (alert shown if none selected)
+- High Priority query now returns different results (High + Urgent instead of "A")
+
+### Developer Benefits
+- ✅ No more hardcoded graph names
+- ✅ Switch between graphs without editing code
+- ✅ Graph selection persists across launches
+- ✅ Priority query works with DB graphs
 
 ## [0.0.11] - 2025-12-24
 
