@@ -25,14 +25,15 @@ generate_icon() {
     local SIZE=$1
     local OUTPUT="$APPICONSET_DIR/icon_${SIZE}x${SIZE}.png"
 
-    # Create icon with ImageMagick
+    # Create icon with ImageMagick using SF (San Francisco) font which has better Unicode support
     magick -size ${SIZE}x${SIZE} xc:"$BG_COLOR" \
         -fill "$CIRCLE_COLOR" \
         -draw "circle $(($SIZE/2)),$(($SIZE/2)) $(($SIZE/2)),$(($SIZE*2/10))" \
+        -gravity center \
         -fill "$CHECK_COLOR" \
-        -stroke "$CHECK_COLOR" \
-        -strokewidth $(($SIZE/30)) \
-        -draw "path 'M $(($SIZE*3/10)),$(($SIZE*5/10)) L $(($SIZE*45/100)),$(($SIZE*65/100)) L $(($SIZE*7/10)),$(($SIZE*35/100))'" \
+        -font "/System/Library/Fonts/SFNS.ttf" \
+        -pointsize $(($SIZE*6/10)) \
+        -annotate +0+0 "✓" \
         "$OUTPUT"
 
     echo "✓ Generated ${SIZE}x${SIZE} icon"
