@@ -44,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @MainActor
-    @objc func togglePopover() {
+    @objc private func togglePopover() {
         guard let button = statusItem?.button else { return }
         guard let popover = popover else { return }
 
@@ -65,7 +65,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     )
                 }
             }
-            
+
             // Use robust activation approach
             activateAppAndShowPopover(button: button, popover: popover)
         }
@@ -162,6 +162,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
-
 
 }

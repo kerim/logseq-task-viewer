@@ -1,8 +1,8 @@
 # Logseq Task Viewer
 
-A macOS menu bar application for viewing and managing tasks from Logseq DB graphs.
+A macOS menu bar application for viewing tasks from Logseq DB graphs with customizable queries.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.1-blue)
 ![Platform](https://img.shields.io/badge/platform-macOS%2013.0%2B-lightgrey)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -60,6 +60,79 @@ brew install jet     # EDN/JSON converter
 3. **Select graph** - Open Query Manager → Choose your Logseq database
 4. **View tasks** - Click menu bar icon to see current query results
 5. **Switch queries** - Open Query Manager → Double-click different query
+
+## ✏️ Editing Queries
+
+The app includes three default queries (DOING, TODO, High Priority), but you can create custom queries to view tasks however you want.
+
+### Opening the Query Manager
+
+- Click the gear icon (⚙️) in the task list popover, **OR**
+- Double-click the menu bar icon
+
+### Editing a Query
+
+1. **Select a query** from the list on the left
+2. **Edit the Datalog query** in the text area
+3. **Click "Update Query"** to save your changes
+4. **Double-click the query name** to execute it and see results
+
+### Creating a New Query
+
+1. Click **"+ New Query"** button
+2. Enter a name for your query
+3. Write your Datalog query
+4. Click "Create Query"
+5. Double-click to execute
+
+### Query Examples
+
+**View all tasks with a specific tag:**
+```clojure
+[:find (pull ?b [*])
+ :where
+ [?b :block/tags ?t]
+ [?t :db/id 140]  ; Task tag
+ [?b :block/tags ?tag]
+ [?tag :block/title "YourTagName"]]
+```
+
+**View tasks due this week:**
+```clojure
+[:find (pull ?b [*])
+ :where
+ [?b :block/tags ?t]
+ [?t :db/id 140]
+ [?b :logseq.property/deadline ?deadline]
+ [(< ?deadline 1735689600000)]]  ; Replace with your date
+```
+
+**View tasks with both tag and status:**
+```clojure
+[:find (pull ?b [*])
+ :where
+ [?b :block/tags ?t]
+ [?t :db/id 140]
+ [?b :logseq.property/status ?s]
+ [?s :block/title "Doing"]
+ [?b :block/tags ?tag]
+ [?tag :block/title "Work"]]
+```
+
+### Important Notes
+
+- **Read-only**: This app only views tasks - you cannot edit tasks from the app
+- **Edit in Logseq**: To modify tasks, open Logseq and make changes there
+- **DB graphs only**: Queries use Datalog and only work with Logseq database graphs
+- **Task tag required**: All tasks must be tagged with `#Task` (db/id 140)
+- **Refresh**: Click the menu bar icon to refresh the current query
+
+### Query Tips
+
+- Use `(pull ?b [*])` to get all block properties
+- Block references `[[uuid]]` are automatically resolved to titles
+- Check [Logseq Datalog documentation](https://docs.logseq.com/#/page/advanced%20queries) for query syntax
+- Test queries in Logseq first before adding them to the app
 
 ## 📖 Documentation
 

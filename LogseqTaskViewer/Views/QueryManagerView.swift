@@ -224,15 +224,32 @@ struct QueryManagerView: View {
                 }
             }
 
-            // Version footer
+            // Version footer with quit button
             Divider()
-            HStack {
-                Text("v1.0.0")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                Spacer()
+            VStack(spacing: 8) {
+                HStack {
+                    Text("v1.0.1")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+
+                Divider()
+
+                Button(action: quitApplication) {
+                    HStack {
+                        Image(systemName: "power")
+                        Text("Quit Application")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .keyboardShortcut("q", modifiers: .command)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
             }
             .background(Color(NSColor.controlBackgroundColor))
         }
@@ -422,6 +439,10 @@ struct QueryManagerView: View {
                 print("DEBUG: Query Manager window not found")
             }
         }
+    }
+
+    private func quitApplication() {
+        NSApplication.shared.terminate(nil)
     }
 }
 

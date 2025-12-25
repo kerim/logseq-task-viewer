@@ -11,6 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Link resolution in custom queries (workaround: use block references)
 - Loading text always shows "DOING" (cosmetic issue)
 
+## [1.0.1] - 2025-12-25
+
+### Added
+- ✅ **Quit Button** in Query Manager window footer with power icon
+- ✅ Keyboard shortcut Cmd+Q for quitting from Query Manager
+
+### Changed
+- 🔧 Updated README with accurate "view-only" description
+- 🔧 Added comprehensive query editing documentation section
+- 🔧 Included practical Datalog query examples
+
+### Technical Details
+- **Quit Implementation**: Added quit button in QueryManagerView.swift footer
+- **User Experience**: Clean app exit without needing to force quit
+- **Documentation**: Clarified app is read-only, tasks edited in Logseq only
+
 ## [1.0.0] - 2025-12-25
 
 ### First Public Release 🎉
