@@ -12,7 +12,15 @@ A macOS menu bar application for viewing tasks from Logseq DB graphs with custom
 
 1. Download `LogseqTaskViewer.app.zip` from [Releases](https://github.com/kerim/logseq-task-viewer/releases/latest)
 2. Unzip and move to Applications folder
-3. **First launch:** Right-click → Open (to bypass Gatekeeper)
+3. **First launch (Security):** Since the app isn't signed with an Apple Developer certificate, macOS will block it initially. To open it:
+   - Try to open the app (it will show a security warning)
+   - Open **System Settings → Privacy & Security**
+   - Scroll to the Security section
+   - Click **"Open Anyway"** next to the message about LogseqTaskViewer
+   - Click **"Open"** in the confirmation dialog
+   - Enter your login password when prompted
+   - The app will now open normally in the future
+   - See [Apple's official guide](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac) for more details
 4. Install dependencies (see Requirements below)
 
 ### Option 2: Build from Source
